@@ -9,7 +9,6 @@ model = PPO("MlpPolicy",
             tensorboard_log="./logs/")
 
 
-model.learn(total_timesteps=500000)
-model.save("models/ppo_500000")
+model.learn(total_timesteps=1000000)
+model.save("models/ppo_1000000")
 env.close()
-
