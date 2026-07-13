@@ -100,73 +100,7 @@ class ContactDetector(contactListener):
 
 
 class BipedalWalker(gym.Env, EzPickle):
-    """
-    ## Description
-    This is a simple 4-joint walker robot environment.
-    There are two versions:
-    - Normal, with slightly uneven terrain.
-    - Hardcore, with ladders, stumps, pitfalls.
-
-    To solve the normal version, you need to get 300 points in 1600 time steps.
-    To solve the hardcore version, you need 300 points in 2000 time steps.
-
-    A heuristic is provided for testing. It's also useful to get demonstrations
-    to learn from. To run the heuristic:
-    ```
-    python gymnasium/envs/box2d/bipedal_walker.py
-    ```
-
-    ## Action Space
-    Actions are motor speed values in the [-1, 1] range for each of the
-    4 joints at both hips and knees.
-
-    ## Observation Space
-    State consists of hull angle speed, angular velocity, horizontal speed,
-    vertical speed, position of joints and joints angular speed, legs contact
-    with ground, and 10 lidar rangefinder measurements. There are no coordinates
-    in the state vector.
-
-    ## Rewards
-    Reward is given for moving forward, totaling 300+ points up to the far end.
-    If the robot falls, it gets -100. Applying motor torque costs a small
-    amount of points. A more optimal agent will get a better score.
-
-    ## Starting State
-    The walker starts standing at the left end of the terrain with the hull
-    horizontal, and both legs in the same position with a slight knee angle.
-
-    ## Episode Termination
-    The episode will terminate if the hull gets in contact with the ground or
-    if the walker exceeds the right end of the terrain length.
-
-    ## Arguments
-
-    To use the _hardcore_ environment, you need to specify the `hardcore=True`:
-
-    ```python
-    >>> import gymnasium as gym
-    >>> env = gym.make("BipedalWalker-v3", hardcore=True, render_mode="rgb_array")
-    >>> env
-    <TimeLimit<OrderEnforcing<PassiveEnvChecker<BipedalWalker<BipedalWalker-v3>>>>>
-
-    ```
-
-    ## Version History
-    - v3: Returns the closest lidar trace instead of furthest;
-        faster video recording
-    - v2: Count energy spent
-    - v1: Legs now report contact with ground; motors have higher torque and
-        speed; ground has higher friction; lidar rendered less nervously.
-    - v0: Initial version
-
-
-    <!-- ## References -->
-
-    ## Credits
-    Created by Oleg Klimov
-
-    """
-
+    
     metadata = {
         "render_modes": ["human", "rgb_array"],
         "render_fps": FPS,
@@ -438,7 +372,9 @@ class BipedalWalker(gym.Env, EzPickle):
         self.world.contactListener_bug_workaround = ContactDetector(self)
         self.world.contactListener = self.world.contactListener_bug_workaround
         self.game_over = False
-        self.prev_shaping = None
+        
+        # self.prev_shaping = None
+        
         self.scroll = 0.0
         self.lidar_render = 0
 
@@ -446,6 +382,9 @@ class BipedalWalker(gym.Env, EzPickle):
         self._generate_clouds()
 
         init_x = TERRAIN_STEP * TERRAIN_STARTPAD / 2
+        self.prev_x = init_x
+        self.prev_posture_shaping = None
+        
         init_y = TERRAIN_HEIGHT + 2 * LEG_H
         self.hull = self.world.CreateDynamicBody(
             position=(init_x, init_y), fixtures=HULL_FD
@@ -518,7 +457,60 @@ class BipedalWalker(gym.Env, EzPickle):
         if self.render_mode == "human":
             self.render()
         return self.step(np.array([0, 0, 0, 0]))[0], {}
-
+    
+    def compute_progress_reward(self,pos):
+        dx = pos[0] - self.prev_x
+        progress_scale = 130
+        progress_reward = progress_scale * dx / SCALE
+        return progress_reward
+    
+    def compute_posture_reward(self,angle):
+        posture_scale = -5
+        current_posture_shaping = posture_scale*abs(angle)
+        if self.prev_posture_shaping is None : 
+            return 0,current_posture_shaping 
+        
+        posture_reward = (current_posture_shaping - self.prev_posture_shaping)
+        
+        return posture_reward,current_posture_shaping
+    
+    def compute_energy_penalty(self,action):
+        energy_penalty = 0
+        for a in action:
+            energy_penalty += -(0.00035 * MOTORS_TORQUE * np.clip(np.abs(a), 0, 1))
+        return energy_penalty
+    
+    def compute_terminal_reward(self,terminated) :
+        if terminated : 
+            terminal_reward = -100
+        else : 
+            terminal_reward = 0
+        return terminal_reward
+    
+    def compute_reward(self,pos,angle,action,terminated) :
+        progress_reward = self.compute_progress_reward(pos)
+            
+        posture_reward,current_posture_shaping =\
+            self.compute_posture_reward(angle)
+            
+        energy_penalty = self.compute_energy_penalty(action)
+        
+        terminal_reward = self.compute_terminal_reward(terminated)
+        
+        if terminated : 
+            reward = -100
+        else : 
+            reward = (progress_reward + posture_reward + energy_penalty)
+        print(
+            f"P:{progress_reward:.3f} | "
+            f"Post:{posture_reward:.3f} | "
+            f"E:{energy_penalty:.3f} | "
+            f"T:{terminal_reward:.3f} | "
+            f"R:{reward:.3f}"
+        )
+            
+        return reward, current_posture_shaping
+    
     def step(self, action: np.ndarray):
         assert self.hull is not None
 
@@ -549,7 +541,8 @@ class BipedalWalker(gym.Env, EzPickle):
 
         self.world.Step(1.0 / FPS, 6 * 30, 2 * 30)
 
-        pos = self.hull.position
+        pos = self.hull.position          
+
         vel = self.hull.linearVelocity
 
         for i in range(10):
@@ -583,33 +576,22 @@ class BipedalWalker(gym.Env, EzPickle):
 
         self.scroll = pos.x - VIEWPORT_W / SCALE / 5
 
-        shaping = (
-            130 * pos[0] / SCALE
-        )  # moving forward is a way to receive reward (normalized to get 300 on completion)
-        shaping -= 5.0 * abs(
-            state[0]
-        )  # keep head straight, other than that and falling, any behavior is unpunished
-
-        reward = 0
-        if self.prev_shaping is not None:
-            reward = shaping - self.prev_shaping
-        self.prev_shaping = shaping
-
-        for a in action:
-            reward -= 0.00035 * MOTORS_TORQUE * np.clip(np.abs(a), 0, 1)
-            # normalized to about -50.0 using heuristic, more optimal agent should spend less
-
-        terminated = False
-        if self.game_over or pos[0] < 0:
-            reward = -100
-            terminated = True
-        if pos[0] > (TERRAIN_LENGTH - TERRAIN_GRASS) * TERRAIN_STEP:
-            terminated = True
+        terminated = self.game_over or pos[0]<0
+        reward , current_posture_shaping = self.compute_reward (
+            pos,
+            state[0],
+            action,
+            terminated
+        )
+        
+        self.prev_x = pos[0] 
+        
+        self.prev_posture_shaping = current_posture_shaping # updates the prev_posture_shaping
 
         if self.render_mode == "human":
             self.render()
         # truncation=False as the time limit is handled by the `TimeLimit` wrapper added during `make`
-        return np.array(state, dtype=np.float32), reward, terminated, False, {}
+        return np.array(state, dtype=np.float32),reward,terminated, False, {}
 
     def render(self):
         if self.render_mode is None:
