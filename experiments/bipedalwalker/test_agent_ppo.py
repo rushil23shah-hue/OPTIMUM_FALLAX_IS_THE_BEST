@@ -3,7 +3,7 @@ from stable_baselines3 import PPO  # type: ignore
 
 env = gym.make("BipedalWalker-v3",render_mode ="human")
 
-model = PPO.load("models/ppo_1000000")
+model = PPO.load("models/Baseline/ppo_1000000")
 observation,info = env.reset()
 terminated = False
 truncated = False 

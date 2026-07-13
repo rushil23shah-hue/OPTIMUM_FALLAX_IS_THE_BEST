@@ -3,7 +3,7 @@ from stable_baselines3 import SAC  # type: ignore
 
 env = gym.make("BipedalWalker-v3", render_mode = "human")
 
-model = SAC.load("models/sac_500000")
+model = SAC.load("models/Baseline/sac_500000")
 
 observation, info = env.reset()
 
