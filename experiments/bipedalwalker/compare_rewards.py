@@ -22,7 +22,7 @@ for step in range (100):
     print(
     f"{step:03d} | "
     f"Base = {reward1:.6f} | "
-    f"Refactored = {reward2:.6f} | "
+    f"New = {reward2:.6f} | "
     f"Diff = {difference:.8f}"
     )
     if difference > 1e-6:

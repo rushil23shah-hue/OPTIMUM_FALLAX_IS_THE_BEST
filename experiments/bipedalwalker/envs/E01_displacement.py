@@ -461,7 +461,7 @@ class BipedalWalker(gym.Env, EzPickle):
     def compute_progress_reward(self,pos):
         dx = pos[0] - self.prev_x
         progress_scale = 130
-        progress_reward = progress_scale * dx / SCALE
+        progress_reward = progress_scale *abs(dx) / SCALE
         return progress_reward
     
     def compute_posture_reward(self,angle):
@@ -501,21 +501,15 @@ class BipedalWalker(gym.Env, EzPickle):
             reward = -100
         else : 
             reward = (progress_reward + posture_reward + energy_penalty)
-        print(
-            f"P:{progress_reward:.3f} | "
-            f"Post:{posture_reward:.3f} | "
-            f"E:{energy_penalty:.3f} | "
-            f"T:{terminal_reward:.3f} | "
-            f"R:{reward:.3f}"
-        )  
-        return (
-            reward,
-            current_posture_shaping,
-            progress_reward,
-            posture_reward,
-            energy_penalty,
-            terminal_reward,
-        )
+            print(
+                f"P:{progress_reward:.3f} | "
+                f"Post:{posture_reward:.3f} | "
+                f"E:{energy_penalty:.3f} | "
+                f"T:{terminal_reward:.3f} | "
+                f"R:{reward:.3f}"
+            )
+            
+        return reward, current_posture_shaping
     
     def step(self, action: np.ndarray):
         assert self.hull is not None
@@ -583,18 +577,11 @@ class BipedalWalker(gym.Env, EzPickle):
         self.scroll = pos.x - VIEWPORT_W / SCALE / 5
 
         terminated = self.game_over or pos[0]<0
-        (
-            reward,
-            current_posture_shaping,
-            progress_reward,
-            posture_reward,
-            energy_penalty,
-            terminal_reward,
-        ) = self.compute_reward(
+        reward , current_posture_shaping = self.compute_reward (
             pos,
             state[0],
             action,
-            terminated,
+            terminated
         )
         
         self.prev_x = pos[0] 
@@ -604,19 +591,7 @@ class BipedalWalker(gym.Env, EzPickle):
         if self.render_mode == "human":
             self.render()
         # truncation=False as the time limit is handled by the `TimeLimit` wrapper added during `make`
-        return(
-        np.array(state, dtype=np.float32),
-        reward,
-        terminated,
-        False, 
-        {"progress_reward": progress_reward,
-        "posture_reward": posture_reward,
-        "energy_penalty": energy_penalty,
-        "terminal_reward": terminal_reward,
-        "x_position": pos[0],
-        "angle": state[0],
-        },
-    )
+        return np.array(state, dtype=np.float32),reward,terminated, False, {}
 
     def render(self):
         if self.render_mode is None:
