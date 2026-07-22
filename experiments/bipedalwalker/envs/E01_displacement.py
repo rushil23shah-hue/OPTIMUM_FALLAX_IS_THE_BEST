@@ -7,6 +7,7 @@ import gymnasium as gym
 from gymnasium import error, spaces
 from gymnasium.error import DependencyNotInstalled
 from gymnasium.utils import EzPickle
+from envs.reward_functions import RewardFunctions
 
 
 try:
@@ -113,6 +114,7 @@ class BipedalWalker(gym.Env, EzPickle):
         self.world = Box2D.b2World()
         self.terrain: List[Box2D.b2Body] = []
         self.hull: Optional[Box2D.b2Body] = None
+        self.reward_fn = RewardFunctions(scale=SCALE,motor_torque=MOTORS_TORQUE,)
 
         self.prev_shaping = None
 
@@ -382,8 +384,7 @@ class BipedalWalker(gym.Env, EzPickle):
         self._generate_clouds()
 
         init_x = TERRAIN_STEP * TERRAIN_STARTPAD / 2
-        self.prev_x = init_x
-        self.prev_posture_shaping = None
+        self.reward_fn.reset(init_x)
         
         init_y = TERRAIN_HEIGHT + 2 * LEG_H
         self.hull = self.world.CreateDynamicBody(
@@ -457,59 +458,7 @@ class BipedalWalker(gym.Env, EzPickle):
         if self.render_mode == "human":
             self.render()
         return self.step(np.array([0, 0, 0, 0]))[0], {}
-    
-    def compute_progress_reward(self,pos):
-        dx = pos[0] - self.prev_x
-        progress_scale = 130
-        progress_reward = progress_scale *abs(dx) / SCALE
-        return progress_reward
-    
-    def compute_posture_reward(self,angle):
-        posture_scale = -5
-        current_posture_shaping = posture_scale*abs(angle)
-        if self.prev_posture_shaping is None : 
-            return 0,current_posture_shaping 
-        
-        posture_reward = (current_posture_shaping - self.prev_posture_shaping)
-        
-        return posture_reward,current_posture_shaping
-    
-    def compute_energy_penalty(self,action):
-        energy_penalty = 0
-        for a in action:
-            energy_penalty += -(0.00035 * MOTORS_TORQUE * np.clip(np.abs(a), 0, 1))
-        return energy_penalty
-    
-    def compute_terminal_reward(self,terminated) :
-        if terminated : 
-            terminal_reward = -100
-        else : 
-            terminal_reward = 0
-        return terminal_reward
-    
-    def compute_reward(self,pos,angle,action,terminated) :
-        progress_reward = self.compute_progress_reward(pos)
-            
-        posture_reward,current_posture_shaping =\
-            self.compute_posture_reward(angle)
-            
-        energy_penalty = self.compute_energy_penalty(action)
-        
-        terminal_reward = self.compute_terminal_reward(terminated)
-        
-        if terminated : 
-            reward = -100
-        else : 
-            reward = (progress_reward + posture_reward + energy_penalty)
-            print(
-                f"P:{progress_reward:.3f} | "
-                f"Post:{posture_reward:.3f} | "
-                f"E:{energy_penalty:.3f} | "
-                f"T:{terminal_reward:.3f} | "
-                f"R:{reward:.3f}"
-            )
-            
-        return reward, current_posture_shaping
+
     
     def step(self, action: np.ndarray):
         assert self.hull is not None
@@ -576,22 +525,53 @@ class BipedalWalker(gym.Env, EzPickle):
 
         self.scroll = pos.x - VIEWPORT_W / SCALE / 5
 
-        terminated = self.game_over or pos[0]<0
-        reward , current_posture_shaping = self.compute_reward (
-            pos,
-            state[0],
-            action,
-            terminated
+        terminated = (self.game_over or pos.x<0)
+        if pos.x > (TERRAIN_LENGTH-TERRAIN_GRASS)*TERRAIN_STEP :
+            terminated = True
+        progress_reward = self.reward_fn.compute_progress_reward(pos.x)
+
+        posture_reward = self.reward_fn.compute_posture_reward(state[0])
+
+        energy_penalty = self.reward_fn.compute_energy_penalty(action)
+
+        terminal_reward = self.reward_fn.compute_terminal_reward(terminated)
+
+        reward = (
+            progress_reward
+            + posture_reward
+            + energy_penalty
         )
-        
-        self.prev_x = pos[0] 
-        
-        self.prev_posture_shaping = current_posture_shaping # updates the prev_posture_shaping
+        if terminated : 
+            reward += terminal_reward
 
         if self.render_mode == "human":
             self.render()
+        '''
+        print(
+            f"P={progress_reward:.3f} | "
+            f"Post={posture_reward:.3f} | "
+            f"Energy={energy_penalty:.3f} | "
+            f"Terminal={terminal_reward:.3f} | "
+            f"Reward={reward:.3f}"
+        )
+        '''
         # truncation=False as the time limit is handled by the `TimeLimit` wrapper added during `make`
-        return np.array(state, dtype=np.float32),reward,terminated, False, {}
+        return(
+        np.array(state, dtype=np.float32),
+        reward,
+        terminated,
+        False, 
+        {"progress_reward": progress_reward,
+        "posture_reward": posture_reward,
+        "energy_penalty": energy_penalty,
+        "terminal_reward": terminal_reward,
+        "x_position": pos.x,
+        "y_position": pos.y,
+        "angle": state[0],
+        "velocity_x": vel.x,
+        "velocity_y": vel.y,
+        },
+    )
 
     def render(self):
         if self.render_mode is None:

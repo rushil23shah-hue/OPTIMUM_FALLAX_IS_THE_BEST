@@ -1,8 +1,10 @@
 import gymnasium as gym  # type: ignore
 from stable_baselines3 import PPO  # type: ignore
+from envs.E00_reward_sep import BipedalWalker
 
-env = gym.make("BipedalWalker-v3",render_mode ="human")
-
+env = BipedalWalker(render_mode="human")
+#env = gym.make("BipedalWalker-v3",render_mode ="human")
+#model = PPO.load("models/E00/model_ppo")
 model = PPO.load("models/Baseline/ppo_1000000")
 observation,info = env.reset()
 terminated = False

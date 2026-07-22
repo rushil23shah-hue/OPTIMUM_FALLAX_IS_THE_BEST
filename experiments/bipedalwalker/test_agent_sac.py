@@ -1,8 +1,10 @@
 import gymnasium as gym  # type: ignore
 from stable_baselines3 import SAC  # type: ignore
+from envs.E00_reward_sep import BipedalWalker
 
+#env = BipedalWalker(render_mode="human")
 env = gym.make("BipedalWalker-v3", render_mode = "human")
-
+#model = SAC.load("models/E00/model_sac")
 model = SAC.load("models/Baseline/sac_500000")
 
 observation, info = env.reset()
