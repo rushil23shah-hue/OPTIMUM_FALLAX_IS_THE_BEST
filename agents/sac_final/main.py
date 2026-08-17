@@ -17,7 +17,7 @@ parser.add_argument('--Loadmodel', type=str2bool, default=False, help='Load pret
 parser.add_argument('--ModelIdex', type=int, default=100, help='which model to load')
 
 parser.add_argument('--seed', type=int, default=0, help='random seed')
-parser.add_argument('--Max_train_steps', type=int, default=int(1e6), help='Max training steps')
+parser.add_argument('--Max_train_steps', type=int, default=int(0.5e6), help='Max training steps')
 parser.add_argument('--save_interval', type=int, default=int(100e3), help='Model saving interval, in steps.')
 parser.add_argument('--eval_interval', type=int, default=int(2.5e3), help='Model evaluating interval, in steps.')
 parser.add_argument('--update_every', type=int, default=50, help='Training Fraquency, in stpes')
@@ -29,9 +29,8 @@ parser.add_argument('--c_lr', type=float, default=3e-4, help='Learning rate of c
 parser.add_argument('--batch_size', type=int, default=256, help='batch_size of training')
 parser.add_argument('--alpha', type=float, default=0.12, help='Entropy coefficient')
 parser.add_argument('--adaptive_alpha', type=str2bool, default=True, help='Use adaptive_alpha or Not')
-parser.add_argument('--plot_rewards', type=str2bool, default=True, help='Save an evaluation-reward plot while training')
-parser.add_argument('--moving_avg_window', type=int, default=10,
-                    help='Number of evaluation points included in the reward moving average')
+parser.add_argument('--plot_rewards', type=str2bool, default=True,
+                    help='Save a 100-episode moving-average training-reward plot')
 opt = parser.parse_args()
 if opt.dvc == 'cuda' and not torch.cuda.is_available():
     print('CUDA is unavailable; using CPU instead.')
@@ -40,9 +39,9 @@ opt.dvc = torch.device(opt.dvc) # from str to torch.device
 print(opt)
 
 
-def save_reward_plot(steps, rewards, env_name, seed, moving_avg_window):
-    """Save the evaluation learning curve without requiring a GUI backend."""
-    if not rewards:
+def save_reward_plot(episode_scores):
+    """Match TD3's plot: a 100-episode average of raw training returns."""
+    if not episode_scores:
         return
 
     import matplotlib
@@ -50,19 +49,19 @@ def save_reward_plot(steps, rewards, env_name, seed, moving_avg_window):
     import matplotlib.pyplot as plt
 
     os.makedirs('plots', exist_ok=True)
+    episodes = range(1, len(episode_scores) + 1)
+    running_average = [
+        np.mean(episode_scores[max(0, index - 99):index + 1])
+        for index in range(len(episode_scores))
+    ]
     plt.figure(figsize=(9, 5))
-    plt.plot(steps, rewards, marker='o', markersize=3, linewidth=1.5, label='Evaluation reward')
-    if moving_avg_window > 1 and len(rewards) >= moving_avg_window:
-        moving_average = np.convolve(rewards, np.ones(moving_avg_window) / moving_avg_window, mode='valid')
-        plt.plot(steps[moving_avg_window - 1:], moving_average, linewidth=2.5,
-                 label=f'{moving_avg_window}-evaluation moving average')
-    plt.xlabel('Training steps')
-    plt.ylabel('Average episode reward')
-    plt.title(f'SAC rewards: {env_name}')
+    plt.plot(episodes, running_average)
+    plt.xlabel('Episode')
+    plt.ylabel('Training return (100-episode average)')
+    plt.title('SAC on BipedalWalker-v3')
     plt.grid(True, alpha=0.3)
-    plt.legend()
     plt.tight_layout()
-    plt.savefig(os.path.join('plots', f'{env_name}_seed{seed}_rewards.png'), dpi=150)
+    plt.savefig(os.path.join('plots', 'sac_learning_curve.png'), dpi=150)
     plt.close()
 
 
@@ -111,12 +110,12 @@ def main():
             print('EnvName:', BrifEnvName, 'score:', score)
     else:
         total_steps = 0
-        eval_steps = []
-        eval_rewards = []
+        episode_scores = []
         while total_steps < opt.Max_train_steps:
             s, info = env.reset(seed=env_seed)  # Do not use opt.seed directly, or it can overfit to opt.seed
             env_seed += 1
             done = False
+            episode_score = 0.0
 
             '''Interact & trian'''
             while not done:
@@ -127,6 +126,7 @@ def main():
                     a = agent.select_action(s, deterministic=False)  # a∈[-1,1]
                     act = Action_adapter(a, opt.max_action)  # act∈[-max,max]
                 s_next, r, dw, tr, info = env.step(act)  # dw: dead&win; tr: truncated
+                episode_score += r  # Raw environment reward, matching TD3's plotted metric.
                 r = Reward_adapter(r, reward_env_index)
                 done = (dw or tr)
 
@@ -144,17 +144,16 @@ def main():
                 if total_steps % opt.eval_interval == 0:
                     ep_r = evaluate_policy(eval_env, opt.max_action, agent, turns=3)
                     if opt.write: writer.add_scalar('ep_r', ep_r, global_step=total_steps)
-                    eval_steps.append(total_steps)
-                    eval_rewards.append(ep_r)
-                    if opt.plot_rewards:
-                        save_reward_plot(eval_steps, eval_rewards, BrifEnvName, opt.seed, opt.moving_avg_window)
                     print(f'EnvName:{BrifEnvName}, Steps: {int(total_steps/1000)}k, Episode Reward:{ep_r}')
 
                 '''save model'''
                 if total_steps % opt.save_interval == 0:
                     agent.save(BrifEnvName, int(total_steps/1000))
+            episode_scores.append(episode_score)
+            if opt.write:
+                writer.add_scalar('training_episode_reward', episode_score, global_step=len(episode_scores))
         if opt.plot_rewards:
-            save_reward_plot(eval_steps, eval_rewards, BrifEnvName, opt.seed, opt.moving_avg_window)
+            save_reward_plot(episode_scores)
         env.close()
         eval_env.close()
 
