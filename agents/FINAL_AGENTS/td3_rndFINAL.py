@@ -1,31 +1,3 @@
-"""
-TD3 + RND (Random Network Distillation) for BipedalWalker-v3.
-
-Design notes (why it's structured this way):
-- RND is normally an on-policy exploration bonus (PPO+RND). Bolting it onto an
-  off-policy method like TD3 is prone to non-stationarity: if we stored a stale
-  intrinsic reward in the replay buffer, it would reflect the *predictor's
-  skill at the time the transition was collected*, not at the time it is
-  replayed. An old transition would look "novel" forever even after the
-  predictor has since learned to model that region of state space well.
-- The fix used here: never store intrinsic reward. Store only
-  (state, action, next_state, extrinsic_reward, terminated, truncated), and
-  recompute the intrinsic reward *on-the-fly* at every sampling step, using
-  the RND predictor/target's *current* weights. This keeps the intrinsic
-  signal consistent with the current exploration frontier.
-- The intrinsic reward is detached before being folded into the critic
-  target, so TD3's critics never backprop into the RND predictor (and vice
-  versa: the predictor loss never sees critic gradients).
-- terminated vs truncated are tracked separately because they mean different
-  things for bootstrapping and for the intrinsic bonus:
-    * terminated (real environment failure, e.g. the walker fell over) -> do
-      not bootstrap the critic target past this state, and do not award an
-      intrinsic bonus for reaching it (it's a "bad" absorbing state, not a
-      "novel" one worth encouraging).
-    * truncated (time-limit cutoff) -> the episode didn't really end, so we
-      still bootstrap the critic target AND still keep the intrinsic reward.
-"""
-
 import os
 import time
 from collections import deque
@@ -57,11 +29,7 @@ def plot_learning_curve(x, scores, figure_file: str, window: int = 100) -> None:
     plt.savefig(figure_file)
     plt.close()
 
-
-# ----------------------------------------------------------------------------
-# 1. Running mean/std tracker (used both for RND state normalization and for
-#    normalizing the scale of the intrinsic reward itself)
-# ----------------------------------------------------------------------------
+# 1. Running mean/std tracker 
 
 class RunningMeanStd:
     """Welford-style running mean/variance, updated incrementally batch by batch."""
@@ -74,7 +42,6 @@ class RunningMeanStd:
     def update(self, x: np.ndarray) -> None:
         x = np.asarray(x, dtype=np.float64)
         if x.ndim == 1 and self.mean.shape == ():
-            # scalar stream (e.g. intrinsic reward values)
             batch_mean = x.mean()
             batch_var = x.var()
             batch_count = x.shape[0]
@@ -105,11 +72,7 @@ class RunningMeanStd:
         return np.sqrt(self.var)
 
 
-# ----------------------------------------------------------------------------
 # 2. Replay buffer -- intrinsic reward is intentionally NOT stored here.
-#    We keep `terminated` and `truncated` separately (not a single `done`
-#    flag) because they are used differently downstream (see module docstring).
-# ----------------------------------------------------------------------------
 
 class ReplayBuffer:
     def __init__(self, max_size: int, state_dim: int, n_actions: int):
@@ -147,10 +110,7 @@ class ReplayBuffer:
         )
 
 
-# ----------------------------------------------------------------------------
 # 3. TD3 Actor / Critic networks
-# ----------------------------------------------------------------------------
-
 class CriticNetwork(nn.Module):
     def __init__(self, beta: float, state_dim: int, n_actions: int,
                  fc1_dims: int = 256, fc2_dims: int = 256,
@@ -208,10 +168,8 @@ class ActorNetwork(nn.Module):
     def load_checkpoint(self):
         self.load_state_dict(T.load(self.checkpoint_file, map_location=self.device))
 
-
-# ----------------------------------------------------------------------------
 # 4. RND Target / Predictor networks
-# ----------------------------------------------------------------------------
+
 
 def _orthogonal_init(module: nn.Module, gain: float = np.sqrt(2)) -> None:
     for layer in module.modules():
@@ -261,7 +219,7 @@ class RNDPredictorNetwork(nn.Module):
             nn.ReLU(),
             nn.Linear(h1, h2),
             nn.ReLU(),
-            nn.Linear(h2, embed_dim),
+            nn.Linear(h2, embed_dim), 
         )
         _orthogonal_init(self.net)
 
@@ -341,9 +299,7 @@ class TD3RNDAgent:
         self.obs_rms = RunningMeanStd(shape=(state_dim,))
         self.intrinsic_reward_rms = RunningMeanStd(shape=())
 
-    # ------------------------------------------------------------------
     # Environment-facing helpers
-    # ------------------------------------------------------------------
 
     def update_obs_rms(self, raw_state: np.ndarray) -> None:
         """Call once per env step with the raw (unnormalized) state observed."""
@@ -380,9 +336,8 @@ class TD3RNDAgent:
     def remember(self, state, action, reward, next_state, terminated, truncated) -> None:
         self.memory.store_transition(state, action, reward, next_state, terminated, truncated)
 
-    # ------------------------------------------------------------------
     # Intrinsic reward (computed fresh every learn() call, never stored)
-    # ------------------------------------------------------------------
+
 
     def _compute_intrinsic_reward(self, next_states: T.Tensor) -> Tuple[T.Tensor, T.Tensor]:
         """
@@ -412,10 +367,8 @@ class TD3RNDAgent:
 
         return intrinsic_detached, predictor_loss
 
-    # ------------------------------------------------------------------
-    # Learning step
-    # ------------------------------------------------------------------
 
+    # Learning step
     def learn(self):
         if self.memory.mem_cntr < self.batch_size:
             return None, None
