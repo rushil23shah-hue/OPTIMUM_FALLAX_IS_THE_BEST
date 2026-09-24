@@ -1,0 +1,118 @@
+Starting Refactored Model-Based (Dyna-PPO) Training Pipeline on BipedalWalker-v3...
+Update 1/60 | Real Rollout Return: -917.23 | Dyn Loss: 24.2524 | Replay Size: 2048
+Update 2/60 | Real Rollout Return: -1408.71 | Dyn Loss: 54.7668 | Replay Size: 4096
+Update 3/60 | Real Rollout Return: -272.64 | Dyn Loss: 31.4899 | Replay Size: 6144
+Update 4/60 | Real Rollout Return: -685.55 | Dyn Loss: 38.4365 | Replay Size: 8192
+[AUDITOR ALARM] Dream predicted -5.11, reality average is -773.20!
+Update 5/60 | Real Rollout Return: -581.87 | Dyn Loss: 15.5818 | Replay Size: 10240
+[AUDITOR ALARM] Dream predicted -3.23, reality average is -689.49!
+Update 6/60 | Real Rollout Return: -270.91 | Dyn Loss: 8.1769 | Replay Size: 12288
+[AUDITOR ALARM] Dream predicted -0.44, reality average is -625.35!
+Update 7/60 | Real Rollout Return: -240.54 | Dyn Loss: 0.6020 | Replay Size: 14336
+[AUDITOR ALARM] Dream predicted -0.59, reality average is -562.65!
+Update 8/60 | Real Rollout Return: -123.71 | Dyn Loss: 30.3108 | Replay Size: 16384
+[AUDITOR ALARM] Dream predicted -1.68, reality average is -538.99!
+Update 9/60 | Real Rollout Return: -349.76 | Dyn Loss: 45.3130 | Replay Size: 18432
+[AUDITOR ALARM] Dream predicted -3.33, reality average is -499.33!
+Update 10/60 | Real Rollout Return: -142.35 | Dyn Loss: 30.0062 | Replay Size: 20480
+[AUDITOR ALARM] Dream predicted -2.89, reality average is -464.69!
+Update 11/60 | Real Rollout Return: -118.37 | Dyn Loss: 8.0521 | Replay Size: 22528
+[AUDITOR ALARM] Dream predicted -0.10, reality average is -437.32!
+Update 12/60 | Real Rollout Return: -136.22 | Dyn Loss: 7.5154 | Replay Size: 24576
+[AUDITOR ALARM] Dream predicted -0.19, reality average is -413.53!
+Update 13/60 | Real Rollout Return: -127.96 | Dyn Loss: 15.2478 | Replay Size: 26624
+[AUDITOR ALARM] Dream predicted -2.72, reality average is -391.91!
+Update 14/60 | Real Rollout Return: -110.87 | Dyn Loss: 15.4026 | Replay Size: 28672
+[AUDITOR ALARM] Dream predicted -1.43, reality average is -373.39!
+Update 15/60 | Real Rollout Return: -114.15 | Dyn Loss: 15.0383 | Replay Size: 30720
+[AUDITOR ALARM] Dream predicted -0.86, reality average is -356.87!
+Update 16/60 | Real Rollout Return: -109.14 | Dyn Loss: 30.0346 | Replay Size: 32768
+[AUDITOR ALARM] Dream predicted 0.34, reality average is -342.17!
+Update 17/60 | Real Rollout Return: -106.90 | Dyn Loss: 0.3399 | Replay Size: 34816
+[AUDITOR ALARM] Dream predicted -0.92, reality average is -328.57!
+Update 18/60 | Real Rollout Return: -97.36 | Dyn Loss: 0.3141 | Replay Size: 36864
+[AUDITOR ALARM] Dream predicted -0.32, reality average is -316.07!
+Update 19/60 | Real Rollout Return: -91.10 | Dyn Loss: 0.2799 | Replay Size: 38912
+[AUDITOR ALARM] Dream predicted -1.39, reality average is -304.15!
+Update 20/60 | Real Rollout Return: -77.73 | Dyn Loss: 30.6225 | Replay Size: 40960
+[AUDITOR ALARM] Dream predicted -1.58, reality average is -292.96!
+Update 21/60 | Real Rollout Return: -69.02 | Dyn Loss: 7.7014 | Replay Size: 43008
+[AUDITOR ALARM] Dream predicted 0.59, reality average is -282.96!
+Update 22/60 | Real Rollout Return: -72.91 | Dyn Loss: 7.8937 | Replay Size: 45056
+[AUDITOR ALARM] Dream predicted -0.90, reality average is -273.24!
+Update 23/60 | Real Rollout Return: -59.43 | Dyn Loss: 7.9317 | Replay Size: 47104
+[AUDITOR ALARM] Dream predicted -0.21, reality average is -264.00!
+Update 24/60 | Real Rollout Return: -51.48 | Dyn Loss: 0.2363 | Replay Size: 49152
+[AUDITOR ALARM] Dream predicted -0.20, reality average is -255.08!
+Update 25/60 | Real Rollout Return: -40.95 | Dyn Loss: 7.6173 | Replay Size: 51200
+[AUDITOR ALARM] Dream predicted -0.53, reality average is -247.03!
+Update 26/60 | Real Rollout Return: -45.94 | Dyn Loss: 0.2173 | Replay Size: 53248
+[AUDITOR ALARM] Dream predicted -0.73, reality average is -238.84!
+Update 27/60 | Real Rollout Return: -25.84 | Dyn Loss: 23.0094 | Replay Size: 55296
+[AUDITOR ALARM] Dream predicted -0.32, reality average is -231.08!
+Update 28/60 | Real Rollout Return: -21.63 | Dyn Loss: 0.2117 | Replay Size: 57344
+[AUDITOR ALARM] Dream predicted -0.43, reality average is -223.01!
+Update 29/60 | Real Rollout Return: 3.01 | Dyn Loss: 7.7732 | Replay Size: 59392
+[AUDITOR ALARM] Dream predicted -0.36, reality average is -218.39!
+Update 30/60 | Real Rollout Return: -84.28 | Dyn Loss: 7.7891 | Replay Size: 61440
+[AUDITOR ALARM] Dream predicted -0.21, reality average is -211.84!
+Update 31/60 | Real Rollout Return: -15.40 | Dyn Loss: 15.3435 | Replay Size: 63488
+[AUDITOR ALARM] Dream predicted -0.62, reality average is -204.42!
+Update 32/60 | Real Rollout Return: 25.45 | Dyn Loss: 0.2027 | Replay Size: 65536
+[AUDITOR ALARM] Dream predicted -0.23, reality average is -197.84!
+Update 33/60 | Real Rollout Return: 12.94 | Dyn Loss: 7.8092 | Replay Size: 67584
+[AUDITOR ALARM] Dream predicted -0.07, reality average is -192.01!
+Update 34/60 | Real Rollout Return: 0.27 | Dyn Loss: 0.1909 | Replay Size: 69632
+[AUDITOR ALARM] Dream predicted -0.57, reality average is -185.07!
+Update 35/60 | Real Rollout Return: 51.00 | Dyn Loss: 15.2636 | Replay Size: 71680
+[AUDITOR ALARM] Dream predicted -0.01, reality average is -178.54!
+Update 36/60 | Real Rollout Return: 49.90 | Dyn Loss: 0.1889 | Replay Size: 73728
+[AUDITOR ALARM] Dream predicted -0.18, reality average is -172.71!
+Update 37/60 | Real Rollout Return: 37.11 | Dyn Loss: 0.1957 | Replay Size: 75776
+[AUDITOR ALARM] Dream predicted 0.03, reality average is -166.51!
+Update 38/60 | Real Rollout Return: 63.03 | Dyn Loss: 0.1856 | Replay Size: 77824
+[AUDITOR ALARM] Dream predicted -0.34, reality average is -161.19!
+Update 39/60 | Real Rollout Return: 40.98 | Dyn Loss: 0.1887 | Replay Size: 79872
+[AUDITOR ALARM] Dream predicted -0.13, reality average is -155.43!
+Update 40/60 | Real Rollout Return: 69.23 | Dyn Loss: 0.1927 | Replay Size: 81920
+[AUDITOR ALARM] Dream predicted -0.11, reality average is -150.00!
+Update 41/60 | Real Rollout Return: 67.16 | Dyn Loss: 7.8728 | Replay Size: 83968
+[AUDITOR ALARM] Dream predicted -0.46, reality average is -147.37!
+Update 42/60 | Real Rollout Return: -39.55 | Dyn Loss: 0.1793 | Replay Size: 86016
+[AUDITOR ALARM] Dream predicted 0.21, reality average is -141.78!
+Update 43/60 | Real Rollout Return: 92.92 | Dyn Loss: 0.1832 | Replay Size: 88064
+[AUDITOR ALARM] Dream predicted -0.03, reality average is -138.93!
+Update 44/60 | Real Rollout Return: -16.34 | Dyn Loss: 0.1757 | Replay Size: 90112
+[AUDITOR ALARM] Dream predicted -0.47, reality average is -133.35!
+Update 45/60 | Real Rollout Return: 111.99 | Dyn Loss: 7.6883 | Replay Size: 92160
+[AUDITOR ALARM] Dream predicted 0.13, reality average is -128.35!
+Update 46/60 | Real Rollout Return: 96.78 | Dyn Loss: 0.1802 | Replay Size: 94208
+[AUDITOR ALARM] Dream predicted -0.70, reality average is -125.75!
+Update 47/60 | Real Rollout Return: -6.32 | Dyn Loss: 7.8472 | Replay Size: 96256
+[AUDITOR ALARM] Dream predicted -0.01, reality average is -120.53!
+Update 48/60 | Real Rollout Return: 125.20 | Dyn Loss: 0.1825 | Replay Size: 98304
+[AUDITOR ALARM] Dream predicted 0.35, reality average is -115.61!
+Update 49/60 | Real Rollout Return: 120.51 | Dyn Loss: 0.1762 | Replay Size: 100000
+[AUDITOR ALARM] Dream predicted -0.51, reality average is -110.25!
+Update 50/60 | Real Rollout Return: 152.36 | Dyn Loss: 0.1751 | Replay Size: 100000
+[AUDITOR ALARM] Dream predicted 0.22, reality average is -105.81!
+Update 51/60 | Real Rollout Return: 115.93 | Dyn Loss: 0.1769 | Replay Size: 100000
+[AUDITOR ALARM] Dream predicted -0.30, reality average is -101.25!
+Update 52/60 | Real Rollout Return: 131.45 | Dyn Loss: 0.1714 | Replay Size: 100000
+[AUDITOR ALARM] Dream predicted 0.16, reality average is -97.34!
+Update 53/60 | Real Rollout Return: 105.90 | Dyn Loss: 0.1774 | Replay Size: 100000
+[AUDITOR ALARM] Dream predicted 0.29, reality average is -92.03!
+Update 54/60 | Real Rollout Return: 189.37 | Dyn Loss: 0.1751 | Replay Size: 100000
+[AUDITOR ALARM] Dream predicted 0.24, reality average is -87.91!
+Update 55/60 | Real Rollout Return: 134.53 | Dyn Loss: 0.1728 | Replay Size: 100000
+[AUDITOR ALARM] Dream predicted -0.00, reality average is -85.20!
+Update 56/60 | Real Rollout Return: 63.84 | Dyn Loss: 0.1720 | Replay Size: 100000
+[AUDITOR ALARM] Dream predicted -0.00, reality average is -80.88!
+Update 57/60 | Real Rollout Return: 161.04 | Dyn Loss: 0.1658 | Replay Size: 100000
+[AUDITOR ALARM] Dream predicted 0.21, reality average is -76.94!
+Update 58/60 | Real Rollout Return: 148.05 | Dyn Loss: 0.1694 | Replay Size: 100000
+[AUDITOR ALARM] Dream predicted -0.10, reality average is -72.98!
+Update 59/60 | Real Rollout Return: 156.38 | Dyn Loss: 0.1730 | Replay Size: 100000
+[AUDITOR ALARM] Dream predicted -0.25, reality average is -68.48!
+Update 60/60 | Real Rollout Return: 196.80 | Dyn Loss: 7.9111 | Replay Size: 100000
+Training Complete! Saved ppo_mb_rewards.csv, ppo_mb_curve.png, and model_based_policy.pth.

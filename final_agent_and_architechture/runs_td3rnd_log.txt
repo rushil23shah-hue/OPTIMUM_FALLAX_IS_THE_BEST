@@ -1,0 +1,11 @@
+Episode    10 | Timesteps     1469 | Extrinsic Reward  -101.40 (avg100  -113.24) | Intrinsic Reward Mean 0.1611 | Critic Loss  29.6376 | Elapsed   38.5s
+Episode    20 | Timesteps     2346 | Extrinsic Reward  -117.18 (avg100  -112.07) | Intrinsic Reward Mean 0.1749 | Critic Loss  42.3751 | Elapsed   83.8s
+Episode    30 | Timesteps     4091 | Extrinsic Reward  -178.02 (avg100  -112.95) | Intrinsic Reward Mean 0.1490 | Critic Loss  18.8106 | Elapsed  205.5s
+Episode    40 | Timesteps     5452 | Extrinsic Reward  -108.91 (avg100  -114.04) | Intrinsic Reward Mean 0.1584 | Critic Loss  16.4696 | Elapsed  321.6s
+Episode    50 | Timesteps     7051 | Extrinsic Reward  -115.65 (avg100  -116.58) | Intrinsic Reward Mean 0.1531 | Critic Loss  18.2675 | Elapsed  427.2s
+Episode    60 | Timesteps     8544 | Extrinsic Reward  -112.75 (avg100  -117.71) | Intrinsic Reward Mean 0.1687 | Critic Loss  15.8689 | Elapsed  524.4s
+Episode    70 | Timesteps     9853 | Extrinsic Reward  -104.77 (avg100  -118.01) | Intrinsic Reward Mean 0.1797 | Critic Loss  12.7467 | Elapsed  596.8s
+Episode    80 | Timesteps    11191 | Extrinsic Reward  -122.99 (avg100  -117.02) | Intrinsic Reward Mean 0.1838 | Critic Loss  10.5072 | Elapsed  682.2s
+Episode    90 | Timesteps    13852 | Extrinsic Reward  -118.70 (avg100  -118.47) | Intrinsic Reward Mean 0.1890 | Critic Loss   9.4790 | Elapsed  852.8s
+Episode   100 | Timesteps    16966 | Extrinsic Reward  -116.70 (avg100  -118.59) | Intrinsic Reward Mean 0.1942 | Critic Loss   8.5778 | Elapsed 1031.0s
+Learning curve saved to plots/td3_rnd_bipedalwalker.png

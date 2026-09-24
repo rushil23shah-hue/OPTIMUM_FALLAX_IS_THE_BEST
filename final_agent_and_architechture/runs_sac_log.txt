@@ -1,0 +1,23 @@
+Namespace(dvc=device(type='cpu'), write=False, render=False, Loadmodel=False, ModelIdex=100, seed=0, Max_train_steps=50000, save_interval=10000, eval_interval=2500, update_every=50, gamma=0.99, net_width=256, a_lr=0.0003, c_lr=0.0003, batch_size=256, alpha=0.12, adaptive_alpha=True, plot_rewards=True)
+Env:BipedalWalker-v3  state_dim:24  action_dim:4  max_a:1.0  min_a:-1.0  max_e_steps:1600
+Random Seed: 0
+EnvName:BWv3, Steps: 2k, Episode Reward:-4
+EnvName:BWv3, Steps: 5k, Episode Reward:-114
+EnvName:BWv3, Steps: 7k, Episode Reward:-94
+EnvName:BWv3, Steps: 10k, Episode Reward:-12
+EnvName:BWv3, Steps: 12k, Episode Reward:-38
+EnvName:BWv3, Steps: 15k, Episode Reward:-98
+EnvName:BWv3, Steps: 17k, Episode Reward:-97
+EnvName:BWv3, Steps: 20k, Episode Reward:-94
+EnvName:BWv3, Steps: 22k, Episode Reward:-78
+EnvName:BWv3, Steps: 25k, Episode Reward:-95
+EnvName:BWv3, Steps: 27k, Episode Reward:-113
+EnvName:BWv3, Steps: 30k, Episode Reward:-75
+EnvName:BWv3, Steps: 32k, Episode Reward:-49
+EnvName:BWv3, Steps: 35k, Episode Reward:-65
+EnvName:BWv3, Steps: 37k, Episode Reward:151
+EnvName:BWv3, Steps: 40k, Episode Reward:-37
+EnvName:BWv3, Steps: 42k, Episode Reward:173
+EnvName:BWv3, Steps: 45k, Episode Reward:307
+EnvName:BWv3, Steps: 47k, Episode Reward:50
+EnvName:BWv3, Steps: 50k, Episode Reward:73

@@ -1,4 +1,5 @@
 import csv
+import os
 import matplotlib.pyplot as plt
 import gymnasium as gym
 import numpy as np
@@ -133,9 +134,11 @@ def train_ppo_icm(
     vf_coef=0.5, 
     max_grad_norm=0.5,
     icm_scale=0.01,
-    beta=0.2,         
-    seed=0, 
-    device="cpu"
+    beta=0.2,
+    seed=0,
+    device="cpu",
+    checkpoint_path="ppo_icm.pth",
+    resume_checkpoint=True,
 ):
     torch.manual_seed(seed)
     np.random.seed(seed)
@@ -147,6 +150,9 @@ def train_ppo_icm(
     action_dim = env.action_space.shape[0]
 
     net = ActorCritic(obs_dim, action_dim).to(device)
+    if resume_checkpoint and os.path.exists(checkpoint_path):
+        print(f"Resuming weights from {checkpoint_path}...", flush=True)
+        net.load_state_dict(torch.load(checkpoint_path, map_location=device, weights_only=True))
     optimizer = torch.optim.Adam(net.parameters(), lr=lr, eps=1e-5)
 
     icm = IntrinsicCuriosityModule(obs_dim, action_dim, feature_dim=64).to(device)
@@ -287,6 +293,9 @@ def train_ppo_icm(
 
         print(f"Update {update}/{num_updates} | Total Steps: {global_step} | Mean Extrinsic: {rew_ext_buf.sum():.2f} | Scaled Intrinsic Added: {scaled_int_rew.sum():.2f}")
 
+        if update % 10 == 0 or update == num_updates:
+            torch.save(net.state_dict(), checkpoint_path)
+
     # --- SAVE CSV & PLOT GRAPH ---
     with open("ppo_icm_rewards.csv", mode="w", newline="") as f:
         writer = csv.writer(f)
@@ -306,6 +315,9 @@ def train_ppo_icm(
     plt.legend()
     plt.savefig("ppo_icm_curve.png", dpi=300)
     plt.close()
+
+    print(f"Model saved to {checkpoint_path}", flush=True)
+    return net
 
 
 if __name__ == "__main__":

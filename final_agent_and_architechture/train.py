@@ -147,17 +147,20 @@ def generate_dream_rollouts(policy, dynamics, replay_buffer, horizon=10, num_see
     return obs_t, act_t, logp_t, adv_t, ret_t, mean_dream_return
 
 
-def main():
+def main(checkpoint_path="model_based_policy.pth", resume_checkpoint=True, max_updates=500, n_steps=2048):
     env_id = "BipedalWalker-v3"
     env = gym.make(env_id)
     env = gym.wrappers.ClipAction(env)
-    
+
     obs_dim = env.observation_space.shape[0]
     action_dim = env.action_space.shape[0]
     device = "cpu"
 
     # Networks
     policy = ActorCritic(obs_dim, action_dim).to(device)
+    if resume_checkpoint and os.path.exists(checkpoint_path):
+        print(f"Resuming weights from {checkpoint_path}...", flush=True)
+        policy.load_state_dict(torch.load(checkpoint_path, map_location=device, weights_only=True))
     policy_opt = torch.optim.Adam(policy.parameters(), lr=3e-4, eps=1e-5)
 
     icm = IntrinsicCuriosityModule(obs_dim, action_dim).to(device)
@@ -171,8 +174,6 @@ def main():
     auditor = AdversarialAuditor(discrepancy_threshold=50.0)
 
     # Parameters
-    n_steps = 2048
-    max_updates = 500
     icm_scale = 0.01
 
     raw_obs, _ = env.reset()
@@ -281,6 +282,9 @@ def main():
 
         print(f"Update {update}/{max_updates} | Real Rollout Return: {real_total_return:.2f} | Dyn Loss: {dyn_loss:.4f} | Replay Size: {buffer.size}", flush=True)
 
+        if update % 10 == 0 or update == max_updates:
+            torch.save(policy.state_dict(), checkpoint_path)
+
     # Save metrics & plot curve
     with open("ppo_mb_rewards.csv", mode="w", newline="") as f:
         writer = csv.writer(f)
@@ -301,7 +305,8 @@ def main():
     plt.savefig("ppo_mb_curve.png", dpi=300)
     plt.close()
 
-    print("Training Complete! Saved ppo_mb_rewards.csv and ppo_mb_curve.png.")
+    print(f"Training Complete! Saved ppo_mb_rewards.csv, ppo_mb_curve.png, and {checkpoint_path}.")
+    return policy
 
 
 if __name__ == "__main__":

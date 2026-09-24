@@ -13,7 +13,7 @@ AGENTS = {
     "ppo":         ("ppo_simple",   "train_ppo"),
     "ppo_icm":     ("ppo_icm",      "train_ppo_icm"),
     "td3":         ("td3FINAL",     "train_td3"),
-    "td3_rnd":     ("td3_rndFINAL", "train_td3_rnd"),   # confirm real name
+    "td3_rnd":     ("td3_rndFINAL", "train"),
     "sac":         ("sac_main",     "main"),
     "model_based": ("train",        "main"),
 }

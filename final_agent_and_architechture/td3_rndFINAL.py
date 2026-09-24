@@ -598,6 +598,7 @@ def train(
 
         if episode % plot_every == 0:
             plot_learning_curve(episode_numbers, episode_scores, figure_file)
+            agent.save_models()
 
         if episode % 10 == 0:
             avg_reward = np.mean(ext_reward_history)
