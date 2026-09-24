@@ -572,13 +572,18 @@ def train(
     env.close()
     agent.save_models()
     print(f"Learning curve saved to {figure_file}")
+    try:
+        from .metrics_integration import attach_metrics_context
+    except ImportError:
+        from metrics_integration import attach_metrics_context
+    return attach_metrics_context(agent, env_id, agent.gamma)
 
 
 if __name__ == "__main__":
     train(
         env_id="BipedalWalker-v3",
-        n_episodes=3000,
-        max_timesteps=int(1e6),
+        n_episodes=30,
+        max_timesteps=int(200),
         warmup=1000,
         seed=0,
         figure_file="plots/td3_rnd_bipedalwalker.png",

@@ -3,6 +3,10 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+try:
+    from .metrics_integration import attach_metrics_context
+except ImportError:
+    from metrics_integration import attach_metrics_context
 
 
 # 1. OBSERVATION NORMALIZER
@@ -288,9 +292,13 @@ def train_ppo_icm(
 
         print(f"Update {update}/{num_updates} | Total Steps: {global_step} | Mean Extrinsic: {rew_ext_buf.sum():.2f} | Scaled Intrinsic Added: {scaled_int_rew.sum():.2f}")
 
+    env.close()
+    return attach_metrics_context(net, env_id, gamma, obs_rms)
+
+
 if __name__ == "__main__":
     train_ppo_icm(
         env_id="BipedalWalker-v3",
-        total_steps=1_000_000,
+        total_steps=200,
         icm_scale=0.01
     )

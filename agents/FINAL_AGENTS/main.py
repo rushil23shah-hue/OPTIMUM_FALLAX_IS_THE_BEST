@@ -31,12 +31,6 @@ parser.add_argument('--alpha', type=float, default=0.12, help='Entropy coefficie
 parser.add_argument('--adaptive_alpha', type=str2bool, default=True, help='Use adaptive_alpha or Not')
 parser.add_argument('--plot_rewards', type=str2bool, default=True,
                     help='Save a 100-episode moving-average training-reward plot')
-opt = parser.parse_args()
-if opt.dvc == 'cuda' and not torch.cuda.is_available():
-    print('CUDA is unavailable; using CPU instead.')
-    opt.dvc = 'cpu'
-opt.dvc = torch.device(opt.dvc) # from str to torch.device
-print(opt)
 
 
 def save_reward_plot(episode_scores):
@@ -65,8 +59,16 @@ def save_reward_plot(episode_scores):
     plt.close()
 
 
-def main():
-    EnvName = 'BipedalWalker-v3'
+def main(argv=None, env_id='BipedalWalker-v3', total_steps=None, seed=None):
+    opt = parser.parse_args(argv)
+    if total_steps is not None:
+        opt.Max_train_steps = total_steps
+    if seed is not None:
+        opt.seed = seed
+    if opt.dvc == 'cuda' and not torch.cuda.is_available():
+        opt.dvc = 'cpu'
+    opt.dvc = torch.device(opt.dvc)
+    EnvName = env_id
     BrifEnvName = 'BWv3'
     reward_env_index = 4
 
@@ -156,6 +158,11 @@ def main():
             save_reward_plot(episode_scores)
         env.close()
         eval_env.close()
+        try:
+            from .metrics_integration import attach_metrics_context
+        except ImportError:
+            from metrics_integration import attach_metrics_context
+        return attach_metrics_context(agent, env_id, opt.gamma)
 
 
 if __name__ == '__main__':

@@ -5,6 +5,10 @@ import torch
 import torch.nn as nn
 from torch.distributions import Normal
 import gymnasium as gym
+try:
+    from .metrics_integration import attach_metrics_context
+except ImportError:
+    from metrics_integration import attach_metrics_context
 
 
 class RunningMeanStd:
@@ -247,8 +251,8 @@ def train_ppo(env_id="Pendulum-v1", total_steps=200_000, n_steps=2048,
     plt.close()
 
     env.close()
-    return net
+    return attach_metrics_context(net, env_id, gamma, obs_rms, clip=10.0)
 
 
 if __name__ == "__main__":
-    train_ppo(env_id="BipedalWalker-v3", total_steps=2_000_000, eval_every=20_000)
+    train_ppo(env_id="BipedalWalker-v3", total_steps=200, eval_every=200)

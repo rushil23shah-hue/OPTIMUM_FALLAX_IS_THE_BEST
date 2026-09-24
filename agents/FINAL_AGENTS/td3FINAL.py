@@ -9,6 +9,10 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+try:
+    from .metrics_integration import attach_metrics_context
+except ImportError:
+    from metrics_integration import attach_metrics_context
 
 
 class ReplayBuffer:
@@ -140,7 +144,8 @@ def evaluate(agent, env, episodes=5):
 
 
 def train_td3(env_id="BipedalWalker-v3", total_steps=1_000_000, batch_size=100, buffer_size=1_000_000,
-              start_steps=10_000, update_after=1_000, updates_per_step=1, seed=1, device=None):
+              start_steps=10_000, update_after=1_000, updates_per_step=1, seed=1, device=None,
+              output_dir=None):
     random.seed(seed); np.random.seed(seed); torch.manual_seed(seed)
     if torch.cuda.is_available(): torch.cuda.manual_seed_all(seed)
     device = torch.device(device or ("cuda" if torch.cuda.is_available() else "cpu"))
@@ -152,7 +157,8 @@ def train_td3(env_id="BipedalWalker-v3", total_steps=1_000_000, batch_size=100, 
     env.action_space.seed(seed)
     agent = TD3Agent(env.observation_space.shape[0], env.action_space, device)
     replay = ReplayBuffer(env.observation_space.shape[0], env.action_space.shape[0], buffer_size, device)
-    output_dir = Path(__file__).resolve().parent
+    output_dir = Path(output_dir) if output_dir is not None else Path(__file__).resolve().parent
+    output_dir.mkdir(parents=True, exist_ok=True)
     scores, rolling, score = [], deque(maxlen=100), 0.0
     episode, best_eval = 0, -np.inf
 
@@ -188,7 +194,8 @@ def train_td3(env_id="BipedalWalker-v3", total_steps=1_000_000, batch_size=100, 
     plt.title("TD3 on BipedalWalker-v3")
     plt.tight_layout(); plt.savefig(output_dir / "td3_learning_curve.png", dpi=150); plt.close()
     env.close(); eval_env.close()
+    return attach_metrics_context(agent, env_id, agent.gamma)
 
 
 if __name__ == "__main__":
-    train_td3(env_id="BipedalWalker-v3", total_steps=1_000_000)
+    train_td3(env_id="BipedalWalker-v3", total_steps=200)
