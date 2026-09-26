@@ -2,6 +2,7 @@ from sac_utilis import str2bool, evaluate_policy, Action_adapter, Action_adapter
 from datetime import datetime
 from SAC import SAC_countinuous
 import gymnasium as gym
+from reward_wrapper import make_walker_env, reward_profile
 import os, shutil
 import argparse
 import torch
@@ -71,12 +72,12 @@ def main():
     reward_env_index = 4
 
     # Build Env
-    env = gym.make(EnvName, render_mode = "human" if opt.render else None)
-    eval_env = gym.make(EnvName)
+    env = make_walker_env(EnvName, render_mode = "human" if opt.render else None)
+    eval_env = make_walker_env(EnvName)
     opt.state_dim = env.observation_space.shape[0]
     opt.action_dim = env.action_space.shape[0]
     opt.max_action = float(env.action_space.high[0])   #remark: action space【-max,max】
-    opt.max_e_steps = env._max_episode_steps
+    opt.max_e_steps = env.spec.max_episode_steps
     print(f'Env:{EnvName}  state_dim:{opt.state_dim}  action_dim:{opt.action_dim}  '
           f'max_a:{opt.max_action}  min_a:{env.action_space.low[0]}  max_e_steps:{opt.max_e_steps}')
 
@@ -127,7 +128,8 @@ def main():
                     act = Action_adapter(a, opt.max_action)  # act∈[-max,max]
                 s_next, r, dw, tr, info = env.step(act)  # dw: dead&win; tr: truncated
                 episode_score += r  # Raw environment reward, matching TD3's plotted metric.
-                r = Reward_adapter(r, reward_env_index)
+                if reward_profile() == "original":
+                    r = Reward_adapter(r, reward_env_index)
                 done = (dw or tr)
 
                 agent.replay_buffer.add(s, a, r, s_next, dw)

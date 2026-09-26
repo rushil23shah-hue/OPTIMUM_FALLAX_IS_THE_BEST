@@ -34,6 +34,7 @@ from typing import Tuple
 import numpy as np
 import matplotlib.pyplot as plt
 import gymnasium as gym
+from reward_wrapper import make_walker_env, reward_profile
 import torch as T
 import torch.nn as nn
 import torch.nn.functional as F
@@ -524,7 +525,7 @@ def train(
     figure_file: str = "plots/td3_rnd_bipedalwalker.png",
     plot_every: int = 50,
 ):
-    env = gym.make(env_id)
+    env = make_walker_env(env_id)
 
     state_dim = env.observation_space.shape[0]      # 24
     n_actions = env.action_space.shape[0]            # 4
@@ -626,7 +627,7 @@ if __name__ == "__main__":
     train(
         env_id="BipedalWalker-v3",
         n_episodes=3000,
-        max_timesteps=int(1e6),
+        max_timesteps=1000000,
         warmup=1000,
         seed=0,
         figure_file="plots/td3_rnd_bipedalwalker.png",

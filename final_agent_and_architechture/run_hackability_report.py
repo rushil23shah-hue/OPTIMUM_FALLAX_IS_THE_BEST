@@ -12,11 +12,13 @@ for the specific caveat) -- all confirmed against an actual checkpoint
 produced by training each agent, not guessed from source alone.
 """
 
+import argparse
 import json
 import os
 from pathlib import Path
 
 import gymnasium as gym
+from reward_wrapper import make_walker_env, reward_profile
 import numpy as np
 import torch
 
@@ -46,10 +48,16 @@ RUN_DIR = "runs"
 
 def collect_trajectory(env, act_fn, n_steps: int) -> Trajectory:
     obs_list, act_list, rew_list, term_list, trunc_list = [], [], [], [], []
+    native_total = optimized_total = displacement = 0.0
+    failures = 0
     obs, _ = env.reset(seed=0)
     for _ in range(n_steps):
         action = act_fn(obs)
-        next_obs, reward, terminated, truncated, _ = env.step(action)
+        next_obs, reward, terminated, truncated, info = env.step(action)
+        native_total += info.get("native_reward", reward)
+        optimized_total += info.get("optimized_reward", reward)
+        displacement += info.get("forward_displacement", 0.0)
+        failures += int(info.get("walker_failure", False))
 
         obs_list.append(obs)
         act_list.append(action)
@@ -61,13 +69,19 @@ def collect_trajectory(env, act_fn, n_steps: int) -> Trajectory:
         if terminated or truncated:
             obs, _ = env.reset()
 
-    return Trajectory(
+    trajectory = Trajectory(
         obs=np.array(obs_list),
         actions=np.array(act_list),
         rewards=np.array(rew_list),
         terminated=np.array(term_list),
         truncated=np.array(trunc_list),
     )
+
+    trajectory.reward_audit = {"native_return_total": native_total,
+                               "extrinsic_return_total": optimized_total,
+                               "forward_displacement_total": displacement,
+                               "failures": failures, "steps": n_steps}
+    return trajectory
 
 
 # --- PPO adapter -------------------------------------------------------
@@ -102,7 +116,7 @@ def build_ppo():
 # --- TD3 adapter --------------------------------------------------------
 
 def build_td3():
-    env = gym.make(ENV_ID)
+    env = make_walker_env(ENV_ID)
     agent = TD3Agent(env.observation_space.shape[0], env.action_space, device="cpu")
 
     ckpt = "td3_best.pt"
@@ -110,6 +124,10 @@ def build_td3():
     if trained:
         state = torch.load(ckpt, map_location="cpu", weights_only=True)
         agent.actor.load_state_dict(state["actor"])
+        if "q1" not in state or "q2" not in state:
+            raise ValueError("TD3 checkpoint lacks trained critics; retrain before critic-based reporting.")
+        agent.q1.load_state_dict(state["q1"])
+        agent.q2.load_state_dict(state["q2"])
 
     def act_fn(obs):
         return agent.act(obs, deterministic=True)
@@ -130,7 +148,7 @@ def build_sac():
     from SAC import SAC_countinuous
     from sac_utilis import Action_adapter
 
-    env = gym.make(ENV_ID)
+    env = make_walker_env(ENV_ID)
     obs_dim = env.observation_space.shape[0]
     action_dim = env.action_space.shape[0]
     max_action = float(env.action_space.high[0])
@@ -171,7 +189,7 @@ def build_sac():
 def build_td3_rnd():
     from td3_rndFINAL import TD3RNDAgent
 
-    env = gym.make(ENV_ID)
+    env = make_walker_env(ENV_ID)
     obs_dim = env.observation_space.shape[0]
     n_actions = env.action_space.shape[0]
     max_action = env.action_space.high
@@ -218,7 +236,7 @@ def build_td3_rnd():
 def _build_normalized_actor_critic(actor_critic_cls, checkpoint_path):
     from exploration import RunningMeanStd, normalize_obs
 
-    env = gym.make(ENV_ID)
+    env = make_walker_env(ENV_ID)
     env = gym.wrappers.ClipAction(env)
     obs_dim = env.observation_space.shape[0]
     action_dim = env.action_space.shape[0]
@@ -272,6 +290,9 @@ AGENTS = {
 def run_agent(name: str, build_fn):
     env, act_fn, critic_fn, trained = build_fn()
 
+    if not trained:
+        env.close()
+        raise FileNotFoundError(f"No trained checkpoint for {name} in {Path.cwd()}")
     traj = collect_trajectory(env, act_fn, N_STEPS)
     obs_std = np.std(traj.obs, axis=0)
     obs_std[obs_std < 1e-6] = 1e-6  # guard against a constant/degenerate obs dim
@@ -283,6 +304,8 @@ def run_agent(name: str, build_fn):
     tt = termination_timing(traj, max_episode_steps=env.spec.max_episode_steps)
     sat = action_saturation_entropy(traj)
     sens = critic_sensitivity(traj, critic_fn)
+    from fallax_toolkit.timeline import build_timeline
+    timeline = build_timeline(traj, critic_fn)
 
     def collect_fn(noisy_act_fn, n_steps):
         return collect_trajectory(env, noisy_act_fn, n_steps)
@@ -307,6 +330,9 @@ def run_agent(name: str, build_fn):
 
     return {
         "name": name,
+        "reward_profile": reward_profile(),
+        "reward_audit": traj.reward_audit,
+        "timeline": timeline,
         "trained_checkpoint_found": trained,
         "hackability_score": report.score,
         "verdict": report.verdict,
@@ -329,6 +355,27 @@ def run_agent(name: str, build_fn):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Evaluate checkpoints using their recorded reward profile")
+    parser.add_argument("--experiment", type=Path,
+                        default=Path(__file__).resolve().parent / "experiments" / "optimized_v1")
+    args = parser.parse_args()
+    experiment = args.experiment.resolve()
+    manifest_path = experiment / "experiment.json"
+    if not manifest_path.exists():
+        parser.error(f"Missing {manifest_path}; train this experiment using interface.py first.")
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    from reward_wrapper import reward_metadata
+    profile = manifest["reward"]["profile"]
+    if manifest["reward"] != reward_metadata(profile):
+        parser.error("Reward configuration differs from the training manifest.")
+    summary_path = experiment / "summary.json"
+    summary = json.loads(summary_path.read_text(encoding="utf-8")) if summary_path.exists() else {}
+    if any(summary.get(name) != "ok" for name in AGENTS):
+        parser.error("Training is incomplete or failed; all six agents must finish before reporting.")
+    os.environ["WALKER_REWARD_PROFILE"] = profile
+    os.chdir(experiment)
+    np.random.seed(0)
+    torch.manual_seed(0)
     os.makedirs(RUN_DIR, exist_ok=True)
     results = {}
     act_fns = {}
@@ -354,7 +401,7 @@ def main():
     # trained (comparing an untrained network to a trained one is noise).
     trained_names = [n for n in results if results[n]["trained_checkpoint_found"]]
     if len(trained_names) >= 2:
-        eval_env = gym.make(ENV_ID)
+        eval_env = make_walker_env(ENV_ID)
         eval_states = []
         obs, _ = eval_env.reset(seed=123)
         eval_states.append(obs)
@@ -372,6 +419,14 @@ def main():
     else:
         print("\nCross-agent action distance skipped: fewer than 2 TRAINED agents on disk.")
 
+    results["_experiment"] = manifest
+    results["_limitations"] = [
+        "Reward changes alone do not establish reduced reward hacking.",
+        "PPO observation/reward normalization statistics are rebuilt during evaluation.",
+        "ICM/RND critics include intrinsic rewards; diagnostics use extrinsic rewards.",
+        "Cross-agent actions use different normalization conventions.",
+        "Original actor-only TD3 reports used an untrained critic and are not a valid critic comparison.",
+    ]
     with open(os.path.join(RUN_DIR, "hackability_report.json"), "w") as f:
         json.dump(results, f, indent=2, default=float)
     print(f"\nSaved runs/hackability_report.json")

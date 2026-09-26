@@ -2,6 +2,7 @@ import os
 import csv
 import matplotlib.pyplot as plt
 import gymnasium as gym
+from reward_wrapper import make_walker_env, reward_profile
 import numpy as np
 import torch
 import torch.nn as nn
@@ -147,9 +148,9 @@ def generate_dream_rollouts(policy, dynamics, replay_buffer, horizon=10, num_see
     return obs_t, act_t, logp_t, adv_t, ret_t, mean_dream_return
 
 
-def main(checkpoint_path="model_based_policy.pth", resume_checkpoint=True, max_updates=500, n_steps=2048):
+def main(checkpoint_path="model_based_policy.pth", resume_checkpoint=True, max_updates=1500, n_steps=2048):
     env_id = "BipedalWalker-v3"
-    env = gym.make(env_id)
+    env = make_walker_env(env_id)
     env = gym.wrappers.ClipAction(env)
 
     obs_dim = env.observation_space.shape[0]
@@ -258,7 +259,7 @@ def main(checkpoint_path="model_based_policy.pth", resume_checkpoint=True, max_u
         dyn_loss = train_dynamics(dynamics, dyn_opt, buffer, batch_size=256, n_epochs=5, device=device)
 
         # 3. SHORT-HORIZON DREAM ROLLOUTS
-        dream_data = generate_dream_rollouts(policy, dynamics, buffer, horizon=10, num_seeds=64, device=device)
+        dream_data = generate_dream_rollouts(policy, dynamics, buffer, horizon=5, num_seeds=32, device=device)
         
         if dream_data is not None:
             d_obs, d_act, d_logp, d_adv, d_ret, dream_ret_mean = dream_data

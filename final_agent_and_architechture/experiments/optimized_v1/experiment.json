@@ -1,0 +1,44 @@
+{
+  "environment": "BipedalWalker-v3",
+  "reward": {
+    "profile": "optimized_v1",
+    "parameters": {
+      "version": "optimized_v1",
+      "progress": 4.333333333333333,
+      "effort": 0.028,
+      "tilt": 0.1,
+      "angular_speed": 0.002,
+      "action_change": 0.02,
+      "time_cost": 0.01,
+      "failure": -100.0
+    }
+  },
+  "agents": {
+    "ppo": [
+      "ppo_simple",
+      "train_ppo"
+    ],
+    "ppo_icm": [
+      "ppo_icm",
+      "train_ppo_icm"
+    ],
+    "td3": [
+      "td3FINAL",
+      "train_td3"
+    ],
+    "td3_rnd": [
+      "td3_rndFINAL",
+      "train"
+    ],
+    "sac": [
+      "sac_main",
+      "main"
+    ],
+    "model_based": [
+      "train",
+      "main"
+    ]
+  },
+  "initialization": "fresh",
+  "python": "C:\\Users\\Admin\\Desktop\\OPTIMUM_FALLAX_IS_THE_BEST\\OPTIMUM_FALLAX_IS_THE_BEST\\final_agent_and_architechture\\.venv\\Scripts\\python.exe"
+}

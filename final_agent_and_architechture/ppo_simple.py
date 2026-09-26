@@ -7,6 +7,7 @@ import torch
 import torch.nn as nn
 from torch.distributions.normal import Normal
 import gymnasium as gym
+from reward_wrapper import make_walker_env, reward_profile
 
 
 def layer_init(layer, std=np.sqrt(2), bias_const=0.0):
@@ -51,7 +52,7 @@ class ActorCritic(nn.Module):
 
 def make_env(env_id, seed, idx):
     def thunk():
-        env = gym.make(env_id)
+        env = make_walker_env(env_id)
         env = gym.wrappers.RecordEpisodeStatistics(env)
         env = gym.wrappers.ClipAction(env)
         env = gym.wrappers.NormalizeObservation(env)
@@ -309,4 +310,4 @@ def train_ppo(env_id="BipedalWalker-v3", total_steps=2_500_000, num_envs=16, n_s
 
 
 if __name__ == "__main__":
-    train_ppo(env_id="BipedalWalker-v3", total_steps=2_000_000, resume_checkpoint=True)
+    train_ppo(env_id="BipedalWalker-v3", total_steps=2_500_000, resume_checkpoint=True)

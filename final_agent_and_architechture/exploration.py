@@ -71,14 +71,19 @@ class AdversarialAuditor:
             self.historical_real_returns.pop(0)
         self.average_real_return = float(np.mean(self.historical_real_returns))
 
-    def is_hallucination(self, dream_return):
+    def is_hallucination(self, dream_return, dream_obs=None, replay_buffer=None):
         if len(self.historical_real_returns) < 5:
             return False
-            
-        # 🔧 FIX: Check for BOTH massive positive and massive negative hallucinations
+
         discrepancy = abs(dream_return - self.average_real_return)
-        
         if discrepancy > self.discrepancy_threshold:
-            print(f"[AUDITOR ALARM] Dream predicted {dream_return:.2f}, reality average is {self.average_real_return:.2f}!", flush=True)
+            print(f"[AUDITOR ALARM] Dream predicted return {dream_return:.2f}, reality average is {self.average_real_return:.2f}!", flush=True)
             return True
+
+        # Additional safety: if any dream state is completely out-of-bounds (extreme values)
+        if dream_obs is not None and len(dream_obs) > 0:
+            if torch.max(torch.abs(dream_obs)) > 25.0: # BipedalWalker safe observation threshold
+                print(f"[AUDITOR ALARM] Dream state out of bounds detected!", flush=True)
+                return True
+
         return False

@@ -1,39 +1,48 @@
-"""
-interface.py - run every agent once, collect logs, no per-agent calls needed.
-Assumes all agent files sit next to this one (ppo_simple.py, ppo_icm.py,
-td3FINAL.py, td3_rndFINAL.py, sac_main.py, train.py).
-"""
-import importlib, traceback, json, glob, shutil, os
+"""Train all six agents in a fresh, isolated reward experiment."""
+import argparse
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
 
-RUN_DIR = "runs"
-os.makedirs(RUN_DIR, exist_ok=True)
-
-# name -> (module, callable). Adjust callable name for td3_rnd once confirmed.
 AGENTS = {
-    "ppo":         ("ppo_simple",   "train_ppo"),
-    "ppo_icm":     ("ppo_icm",      "train_ppo_icm"),
-    "td3":         ("td3FINAL",     "train_td3"),
-    "td3_rnd":     ("td3_rndFINAL", "train"),
-    "sac":         ("sac_main",     "main"),
-    "model_based": ("train",        "main"),
+    "ppo": ("ppo_simple", "train_ppo"),
+    "ppo_icm": ("ppo_icm", "train_ppo_icm"),
+    "td3": ("td3FINAL", "train_td3"),
+    "td3_rnd": ("td3_rndFINAL", "train"),
+    "sac": ("sac_main", "main"),
+    "model_based": ("train", "main"),
 }
+BASE = Path(__file__).resolve().parent
 
-results = {}
-for name, (mod_name, fn_name) in AGENTS.items():
-    print(f"=== {name} ===")
-    try:
-        mod = importlib.import_module(mod_name)
-        getattr(mod, fn_name)()
-        results[name] = "ok"
-    except Exception as e:
-        traceback.print_exc()
-        results[name] = f"failed: {e}"
 
-    # sweep up whatever csv/png each script dropped in cwd, tag with agent name
-    for f in glob.glob("*.csv") + glob.glob("*.png"):
-        shutil.move(f, os.path.join(RUN_DIR, f"{name}_{f}"))
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--reward-profile", choices=("original", "optimized_v1"), default="optimized_v1")
+    parser.add_argument("--experiment", type=Path, help="New output directory; defaults to experiments/<profile>")
+    args = parser.parse_args()
+    from reward_wrapper import reward_metadata
+    output = (args.experiment or BASE / "experiments" / args.reward_profile).resolve()
+    if output.exists() and any(output.iterdir()):
+        parser.error(f"Experiment directory is not empty: {output}. Choose a new --experiment directory for a fresh run.")
+    output.mkdir(parents=True, exist_ok=True)
+    manifest = {"environment": "BipedalWalker-v3", "reward": reward_metadata(args.reward_profile),
+                "agents": AGENTS, "initialization": "fresh", "python": sys.executable}
+    (output / "experiment.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    env = os.environ.copy()
+    env.update(WALKER_REWARD_PROFILE=args.reward_profile, MPLBACKEND="Agg",
+               PYTHONPATH=str(BASE) + os.pathsep + env.get("PYTHONPATH", ""))
+    results = {}
+    for name, (module, function) in AGENTS.items():
+        print(f"=== {name}: {args.reward_profile} -> {output} ===", flush=True)
+        result = subprocess.run([sys.executable, "-u", "-c",
+                                 f"from {module} import {function}; {function}()"], cwd=output, env=env)
+        results[name] = "ok" if result.returncode == 0 else f"failed: exit {result.returncode}"
+        (output / "summary.json").write_text(json.dumps(results, indent=2), encoding="utf-8")
+    print(json.dumps(results, indent=2))
+    return int(any(value != "ok" for value in results.values()))
 
-with open(os.path.join(RUN_DIR, "summary.json"), "w") as f:
-    json.dump(results, f, indent=2)
 
-print(json.dumps(results, indent=2))
+if __name__ == "__main__":
+    raise SystemExit(main())

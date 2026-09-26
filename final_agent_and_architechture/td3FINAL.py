@@ -4,6 +4,7 @@ from collections import deque
 from pathlib import Path
 
 import gymnasium as gym
+from reward_wrapper import make_walker_env, reward_profile
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
@@ -146,13 +147,13 @@ def train_td3(env_id="BipedalWalker-v3", total_steps=1_000_000, batch_size=100, 
     device = torch.device(device or ("cuda" if torch.cuda.is_available() else "cpu"))
     print(f"Using device: {device}")
 
-    env, eval_env = gym.make(env_id), gym.make(env_id)
+    env, eval_env = make_walker_env(env_id), make_walker_env(env_id)
     state, _ = env.reset(seed=seed)
     eval_env.reset(seed=seed + 1)
     env.action_space.seed(seed)
     agent = TD3Agent(env.observation_space.shape[0], env.action_space, device)
     replay = ReplayBuffer(env.observation_space.shape[0], env.action_space.shape[0], buffer_size, device)
-    output_dir = Path(__file__).resolve().parent
+    output_dir = Path.cwd()
     scores, rolling, score = [], deque(maxlen=100), 0.0
     episode, best_eval = 0, -np.inf
 
@@ -175,7 +176,7 @@ def train_td3(env_id="BipedalWalker-v3", total_steps=1_000_000, batch_size=100, 
                 evaluation = evaluate(agent, eval_env)
                 if evaluation > best_eval:
                     best_eval = evaluation
-                    torch.save({"actor": agent.actor.state_dict()}, output_dir / "td3_best.pt")
+                    torch.save({"actor": agent.actor.state_dict(), "q1": agent.q1.state_dict(), "q2": agent.q2.state_dict()}, output_dir / "td3_best.pt")
                 print(f"Episode {episode:4d} | step {global_step:7d} | avg-100 {np.mean(rolling):7.1f} | eval {evaluation:7.1f}")
             else:
                 print(f"Episode {episode:4d} | step {global_step:7d} | score {score:7.1f} | avg-100 {np.mean(rolling):7.1f}")

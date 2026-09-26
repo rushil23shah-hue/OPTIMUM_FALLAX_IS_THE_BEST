@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=65", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fallax-toolkit"
+version = "0.1.0"
+description = "Local reward-hacking diagnostics and experiment control for BipedalWalker"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+training = ["numpy>=1.24", "torch>=2.0", "gymnasium[box2d]==1.1.1", "matplotlib>=3.7"]
+
+[project.scripts]
+fallax = "fallax_toolkit.server:main"
+
+[tool.setuptools]
+package-dir = {"" = "final_agent_and_architechture"}
+py-modules = ["dashboard", "interface", "reward_wrapper", "run_hackability_report", "metrics", "hackability", "adversarial", "ppo_simple", "ppo_icm", "td3FINAL", "td3_rndFINAL", "sac_main", "sac_utilis", "SAC", "train", "models", "memory", "exploration"]
+
+[tool.setuptools.packages.find]
+where = ["final_agent_and_architechture"]
+include = ["fallax_toolkit*"]
+
+[tool.setuptools.package-data]
+fallax_toolkit = ["static/*"]

@@ -2,6 +2,7 @@ import csv
 import os
 import matplotlib.pyplot as plt
 import gymnasium as gym
+from reward_wrapper import make_walker_env, reward_profile
 import numpy as np
 import torch
 import torch.nn as nn
@@ -143,7 +144,7 @@ def train_ppo_icm(
     torch.manual_seed(seed)
     np.random.seed(seed)
 
-    env = gym.make(env_id)
+    env = make_walker_env(env_id)
     env = gym.wrappers.ClipAction(env)
 
     obs_dim = env.observation_space.shape[0]
