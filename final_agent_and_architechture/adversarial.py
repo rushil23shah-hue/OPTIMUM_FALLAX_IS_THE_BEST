@@ -107,11 +107,24 @@ def adversarial_robustness(
     smallest = min(nonzero_sigmas) if nonzero_sigmas else None
     cliff_drop = float(np.clip(1.0 - retention[smallest], 0.0, 1.0)) if smallest is not None else 0.0
 
+    # Bidirectional anomaly: penalize both performance collapses (r < 1)
+    # AND unexpected noise-induced performance surges (r > 1).
+    anomalies = []
+    for s in nonzero_sigmas:
+        r = retention[s]
+        if r < 1.0:
+            anomalies.append(max(0.0, 1.0 - r))
+        else:
+            anomalies.append(float(1.0 - np.exp(-max(0.0, r - 1.0))))
+
+    robustness_score = float(np.clip(max(anomalies, default=0.0), 0.0, 1.0))
+
     return AdversarialResult(
         sigmas=list(sigmas),
         mean_returns=mean_returns,
         retention=retention,
         worst_case_retention=worst_case_clipped,
         cliff_drop=cliff_drop,
-        robustness_score=float(np.clip(1.0 - worst_case_clipped, 0.0, 1.0)),
+        robustness_score=robustness_score,
     )
+
