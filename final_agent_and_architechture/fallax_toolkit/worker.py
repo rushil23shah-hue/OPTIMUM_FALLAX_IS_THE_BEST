@@ -65,6 +65,17 @@ def report(agents):
     temporary.write_text(json.dumps(results, indent=2, default=float), encoding="utf-8")
     temporary.replace(path)
     print(f"Saved {path}", flush=True)
+    # Keep replay episodes separate from the aggregate evaluation and its RNG state.
+    from .walker_replay import record
+    from .server import write_json
+    replay_errors = {}
+    for agent in agents:
+        try:
+            record(Path.cwd(), agent)
+        except Exception as exc:
+            replay_errors[agent] = str(exc)
+            print(f"Replay unavailable for {agent}: {exc}", flush=True)
+    write_json(Path('runs/replays/status.json'), {'errors': replay_errors})
 
 
 def main():

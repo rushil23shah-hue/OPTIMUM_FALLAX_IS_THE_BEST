@@ -295,13 +295,24 @@ def make_handler(controller):
                     if not path.exists():
                         return self.respond(404, {"error": "No report yet. Evaluate completed agents first."})
                     return self.respond(200, read_json(path))
+                if parsed.path == "/api/replay":
+                    key = query.get("experiment", ["legacy"])[0]
+                    agent = query.get("agent", [""])[0]
+                    if agent not in AGENTS or agent == NASIM_AGENT:
+                        raise ValueError("Unknown Walker agent")
+                    folder = controller.experiment(key) / "runs/replays"
+                    path = folder / (agent + ".json")
+                    if not path.exists():
+                        reason = read_json(folder / 'status.json').get('errors', {}).get(agent)
+                        return self.respond(404, {"error": reason or "No recorded Walker evaluation for this agent yet."})
+                    return self.respond(200, read_json(path))
                 if parsed.path == "/api/log":
                     return self.respond(200, {"text": controller.log(query.get("job", [""])[0])})
-                names = {"/": "index.html", "/app.js": "app.js", "/nasim.js": "nasim.js", "/style.css": "style.css"}
+                names = {"/": "index.html", "/app.js": "app.js", "/nasim.js": "nasim.js", "/style.css": "style.css", "/chakravyuh-mark.png": "chakravyuh-mark.png", "/krisis-flute.png": "krisis-flute.png"}
                 if parsed.path not in names:
                     return self.respond(404, {"error": "Not found."})
                 path = STATIC / names[parsed.path]
-                mime = {".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8"}[path.suffix]
+                mime = {".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8", ".png": "image/png"}[path.suffix]
                 return self.respond(200, path.read_bytes(), mime)
             except (ValueError, OSError) as exc:
                 return self.respond(400, {"error": str(exc)})

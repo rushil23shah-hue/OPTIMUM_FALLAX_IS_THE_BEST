@@ -6,3 +6,4 @@ dist/
 .fallax/
 
 .venv-nasim/
+**/runs/replays/
