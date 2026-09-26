@@ -4,13 +4,15 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fallax-toolkit"
-version = "0.1.0"
-description = "Local reward-hacking diagnostics and experiment control for BipedalWalker"
+version = "0.2.0"
+description = "Local reward-hacking diagnostics and experiment control for BipedalWalker and NASim"
 requires-python = ">=3.10"
 dependencies = []
 
 [project.optional-dependencies]
 training = ["numpy>=1.24", "torch>=2.0", "gymnasium[box2d]==1.1.1", "matplotlib>=3.7"]
+
+nasim = ["numpy>=1.24", "torch>=2.0", "nasim==0.12.0", "torch-geometric==2.7.0"]
 
 [project.scripts]
 fallax = "fallax_toolkit.server:main"

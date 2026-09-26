@@ -14,6 +14,9 @@ import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
 import webbrowser
+from .environments import ENVIRONMENTS, WALKER, nasim_python
+from .nasim.config import ENVIRONMENT as NASIM, AGENT as NASIM_AGENT, make_manifest
+from . import __version__
 
 AGENTS = {
     "ppo": {"label": "PPO", "family": "On-policy", "description": "Clipped policy optimization", "steps": 2500000},
@@ -23,6 +26,7 @@ AGENTS = {
     "sac": {"label": "SAC", "family": "Maximum entropy", "description": "Soft actor-critic", "steps": 500000},
     "model_based": {"label": "Model-based PPO", "family": "Model-based", "description": "Learned dynamics and imagined rollouts", "steps": 3072000},
 }
+AGENTS[NASIM_AGENT] = {"label": "Graph PPO", "family": "Graph / masked categorical", "description": "Notebook GAT encoder, PPO actor and state-value critic", "steps": 102400}
 STATIC = Path(__file__).parent / "static"
 ENGINE = Path(__file__).resolve().parent.parent
 
@@ -94,6 +98,7 @@ class Controller:
             data = read_json(report_path)
             items.append({"id": key, "name": "Original baseline" if key == "legacy" else key,
                           "profile": manifest.get("reward", {}).get("profile", "original"),
+                          "environment": manifest.get("environment", WALKER),
                           "manifest": manifest, "summary": summary,
                           "report_available": bool(data), "agents": [n for n in AGENTS if n in data],
                           "updated": datetime.fromtimestamp(report_path.stat().st_mtime, timezone.utc).isoformat() if report_path.exists() else None,
@@ -117,7 +122,8 @@ class Controller:
                         (("NumPy", "numpy"), ("PyTorch", "torch"), ("Gymnasium", "gymnasium"), ("Box2D", "Box2D"), ("Matplotlib", "matplotlib"))}
         return {"experiments": self.experiments(), "agents": AGENTS, "jobs": jobs,
                 "root": str(self.root), "python": sys.executable, "dependencies": dependencies,
-                "token": self.token, "version": "0.1.0"}
+                "token": self.token, "version": __version__, "environments": ENVIRONMENTS,
+                "nasim_python": nasim_python(ENGINE)}
 
     def save_job(self, job):
         write_json(self.root / ".fallax/jobs" / (job["id"] + ".json"), job)
@@ -133,12 +139,22 @@ class Controller:
         if key == "legacy":
             raise ValueError("The original baseline is read-only. Create a new experiment.")
         output = self.experiment(key)
+        manifest = read_json(output / "experiment.json") if mode == "report" else {}
+        env_id = manifest.get("environment", WALKER) if mode == "report" else data.get("environment", WALKER)
+        if env_id not in ENVIRONMENTS:
+            raise ValueError("Unsupported environment.")
+        config = ENVIRONMENTS[env_id]
+        if any(a not in config["agents"] for a in agents):
+            raise ValueError("The selected agent is not compatible with this environment.")
         steps = data.get("steps")
-        if steps is not None and (type(steps) is not int or not 100000 <= steps <= 10000000):
-            raise ValueError("Training budget must be 100,000–10,000,000 steps, or default.")
-        profile = data.get("profile", "optimized_v1")
-        if profile not in ("original", "optimized_v1"):
-            raise ValueError("Unknown reward profile.")
+        if steps is not None and (type(steps) is not int or not config["minimum_steps"] <= steps <= 10000000):
+            raise ValueError(f"Budget must be {config['minimum_steps']:,}?10,000,000 steps, or default.")
+        profile = manifest.get("reward", {}).get("profile") if mode == "report" else data.get("profile", config["default_profile"])
+        if profile not in config["profiles"]:
+            raise ValueError("Unknown reward profile for this environment.")
+        seed = data.get("seed", 2026)
+        if type(seed) is not int or not 0 <= seed <= 1000000000:
+            raise ValueError("Seed must be an integer from 0 to 1,000,000,000.")
         with self.lock:
             if any(j["status"] in ("queued", "running", "stopping") for j in self.jobs.values()):
                 raise ValueError("A dashboard job is already active. Wait for it or stop it first.")
@@ -146,11 +162,15 @@ class Controller:
                 if output.exists() and any(output.iterdir()):
                     raise ValueError("This experiment already contains files. Use a new name to keep existing training safe.")
                 # Imports happen only at explicit launch, so report viewing needs no ML runtime.
-                from reward_wrapper import reward_metadata
-                manifest = {"environment": "BipedalWalker-v3", "reward": reward_metadata(profile),
-                            "agents": agents, "initialization": "fresh", "created": now(),
-                            "python": sys.executable, "requested_steps": steps,
-                            "budgets": {a: steps or AGENTS[a]["steps"] for a in agents}}
+                if env_id == NASIM:
+                    manifest = make_manifest(profile, steps or AGENTS[NASIM_AGENT]["steps"], seed)
+                    manifest.update(created=now(), python=nasim_python(ENGINE))
+                else:
+                    from reward_wrapper import reward_metadata
+                    manifest = {"environment": WALKER, "reward": reward_metadata(profile),
+                                "agents": agents, "initialization": "fresh", "created": now(),
+                                "python": sys.executable, "requested_steps": steps,
+                                "budgets": {a: steps or AGENTS[a]["steps"] for a in agents}}
                 output.mkdir(parents=True, exist_ok=True)
                 write_json(output / "experiment.json", manifest)
             else:
@@ -162,7 +182,7 @@ class Controller:
                 profile = read_json(output / "experiment.json")["reward"]["profile"]
             job_id = datetime.now().strftime("%Y%m%d-%H%M%S") + "-" + secrets.token_hex(3)
             job = {"id": job_id, "mode": mode, "experiment": key, "agents": agents,
-                   "steps": steps, "profile": profile, "status": "queued", "created": now(),
+                   "steps": steps, "profile": profile, "environment": env_id, "status": "queued", "created": now(),
                    "current_agent": None, "completed_agents": [], "error": None}
             self.jobs[job_id] = job
             self.save_job(job)
@@ -185,9 +205,13 @@ class Controller:
                             break
                         job.update(status="running", current_agent=", ".join(agents))
                         self.save_job(job)
-                        command = [sys.executable, "-u", "-B", "-m", "fallax_toolkit.worker", job["mode"], "--agents", *agents]
-                        if job["mode"] == "train":
-                            command += ["--steps", str(job["steps"] or AGENTS[agents[0]]["steps"])]
+                        if job.get("environment") == NASIM:
+                            command = [nasim_python(ENGINE), "-u", "-B", "-m", "fallax_toolkit.nasim.runner",
+                                       job["mode"], "--experiment", str(output)]
+                        else:
+                            command = [sys.executable, "-u", "-B", "-m", "fallax_toolkit.worker", job["mode"], "--agents", *agents]
+                            if job["mode"] == "train":
+                                command += ["--steps", str(job["steps"] or AGENTS[agents[0]]["steps"])]
                         process = subprocess.Popen(command, cwd=output, env=environment,
                                                    stdout=log, stderr=subprocess.STDOUT,
                                                    creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0)
@@ -273,7 +297,7 @@ def make_handler(controller):
                     return self.respond(200, read_json(path))
                 if parsed.path == "/api/log":
                     return self.respond(200, {"text": controller.log(query.get("job", [""])[0])})
-                names = {"/": "index.html", "/app.js": "app.js", "/style.css": "style.css"}
+                names = {"/": "index.html", "/app.js": "app.js", "/nasim.js": "nasim.js", "/style.css": "style.css"}
                 if parsed.path not in names:
                     return self.respond(404, {"error": "Not found."})
                 path = STATIC / names[parsed.path]

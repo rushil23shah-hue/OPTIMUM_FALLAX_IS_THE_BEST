@@ -1,0 +1,70 @@
+{
+  "environment": "NASim-Pentesting-v0",
+  "agents": [
+    "graph_ppo"
+  ],
+  "reward": {
+    "profile": "nasim_scan_penalty",
+    "parameters": {
+      "scan_cost": 1.0,
+      "notebook_shaping": false,
+      "ids_enabled": false,
+      "explicit_honeypot_penalty_enabled": false,
+      "source_sha256": "4ba93663cde54ab87a7719517b56bbb19877358f9c256e884fa102f989a966e6",
+      "adapter_version": "nasim_graph_ppo_v1"
+    },
+    "historical_verified": false
+  },
+  "initialization": "fresh",
+  "requested_steps": 102400,
+  "budgets": {
+    "graph_ppo": 102400
+  },
+  "seed": 2026,
+  "rollout_steps": 1024,
+  "ppo_epochs": 4,
+  "minibatch_size": 256,
+  "evaluation": {
+    "split": "test",
+    "repeats": 3,
+    "deterministic": true
+  },
+  "scenario_bank": {
+    "train": {
+      "counts": [
+        12,
+        12,
+        12
+      ],
+      "seed_offset": 10000
+    },
+    "validation": {
+      "counts": [
+        3,
+        4,
+        5
+      ],
+      "seed_offset": 50000
+    },
+    "test": {
+      "counts": [
+        5,
+        5,
+        10
+      ],
+      "seed_offset": 90000
+    }
+  },
+  "adapter_version": "nasim_graph_ppo_v1",
+  "source_sha256": "4ba93663cde54ab87a7719517b56bbb19877358f9c256e884fa102f989a966e6",
+  "created": "2026-09-26T07:55:12.173779+00:00",
+  "python": "C:\\Users\\Admin\\Desktop\\OPTIMUM_FALLAX_IS_THE_BEST\\OPTIMUM_FALLAX_IS_THE_BEST\\.venv-nasim\\Scripts\\python.exe",
+  "scenario_fingerprint": "fa8995ba003a6a375159150cfc5ba19a732a3bc60dc6073bb0b38c116df24033",
+  "runtime_versions": {
+    "nasim": "0.12.0",
+    "torch": "2.8.0",
+    "torch-geometric": "2.7.0",
+    "numpy": "2.0.2",
+    "gymnasium": "1.1.1"
+  }
+}

@@ -1,0 +1,50 @@
+[
+  {
+    "iteration": 1,
+    "steps": 1024,
+    "curriculum_difficulty": 0,
+    "mean_reward": 4.897934548649937,
+    "loss": 1748.3888778686523,
+    "elapsed_seconds": 6.85899999999674
+  },
+  {
+    "iteration": 2,
+    "steps": 2048,
+    "curriculum_difficulty": 0,
+    "mean_reward": 4.631953094527125,
+    "loss": 1600.2700500488281,
+    "elapsed_seconds": 13.578000000008615
+  },
+  {
+    "iteration": 3,
+    "steps": 3072,
+    "curriculum_difficulty": 0,
+    "mean_reward": 5.053530246112496,
+    "loss": 1734.785987854004,
+    "elapsed_seconds": 20.187000000005355
+  },
+  {
+    "iteration": 4,
+    "steps": 4096,
+    "curriculum_difficulty": 0,
+    "mean_reward": 5.118207978736609,
+    "loss": 1698.6747360229492,
+    "elapsed_seconds": 26.84299999999348
+  },
+  {
+    "iteration": 5,
+    "steps": 5120,
+    "curriculum_difficulty": 0,
+    "mean_reward": 4.686464822478593,
+    "loss": 1598.4351806640625,
+    "elapsed_seconds": 33.48399999999674
+  },
+  {
+    "iteration": 6,
+    "steps": 6144,
+    "curriculum_difficulty": 0,
+    "mean_reward": 5.048051727563142,
+    "loss": 1661.413200378418,
+    "elapsed_seconds": 40.155999999988126
+  }
+]

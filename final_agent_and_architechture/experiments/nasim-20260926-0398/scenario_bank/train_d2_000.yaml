@@ -1,0 +1,145 @@
+subnets:
+- 1
+- 1
+- 2
+- 1
+topology:
+- - 1
+  - 1
+  - 0
+  - 0
+  - 0
+- - 1
+  - 1
+  - 1
+  - 0
+  - 0
+- - 0
+  - 1
+  - 1
+  - 1
+  - 0
+- - 0
+  - 0
+  - 1
+  - 1
+  - 1
+- - 0
+  - 0
+  - 0
+  - 1
+  - 1
+sensitive_hosts:
+  (2, 0): 20
+  (4, 0): 20
+os:
+- linux
+- windows
+services:
+- ssh
+- ftp
+- http
+processes:
+- tomcat
+- daclsvc
+exploits:
+  e_ssh:
+    service: ssh
+    os: linux
+    prob: 0.4
+    cost: 1.0
+    access: user
+  e_ftp:
+    service: ftp
+    os: windows
+    prob: 0.7
+    cost: 1.0
+    access: user
+  e_http:
+    service: http
+    os: None
+    prob: 0.7
+    cost: 2.0
+    access: user
+privilege_escalation:
+  pe_tomcat:
+    process: tomcat
+    os: linux
+    prob: 0.7
+    cost: 1.0
+    access: root
+  pe_daclsvc:
+    process: daclsvc
+    os: windows
+    prob: 0.7
+    cost: 1.0
+    access: root
+service_scan_cost: 1.0
+os_scan_cost: 1.0
+subnet_scan_cost: 1.0
+process_scan_cost: 1.0
+host_configurations:
+  (1, 0):
+    os: windows
+    services:
+    - ftp
+    processes:
+    - tomcat
+    - daclsvc
+    value: 7
+  (2, 0):
+    os: windows
+    services:
+    - http
+    processes:
+    - tomcat
+    - daclsvc
+    value: 20
+  (3, 0):
+    os: linux
+    services:
+    - ssh
+    - http
+    processes:
+    - tomcat
+    value: 3
+  (3, 1):
+    os: linux
+    services:
+    - ssh
+    processes:
+    - tomcat
+    value: -8
+  (4, 0):
+    os: linux
+    services:
+    - http
+    processes:
+    - tomcat
+    - daclsvc
+    value: 20
+firewall:
+  (0, 1):
+  - ftp
+  (1, 0):
+  - ssh
+  - ftp
+  (1, 2):
+  - http
+  - ftp
+  (2, 1):
+  - http
+  (2, 3):
+  - ftp
+  - ssh
+  (3, 2):
+  - ssh
+  - ftp
+  (3, 4):
+  - ftp
+  - ssh
+  - http
+  (4, 3):
+  - http
+  - ssh
+step_limit: 400

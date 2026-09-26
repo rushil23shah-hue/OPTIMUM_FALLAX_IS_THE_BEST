@@ -8,3 +8,5 @@
 @media print{.sidebar,.topbar,.heading-actions,footer,.toolbar,#toast{display:none!important}.shell{margin:0}main{padding:0;max-width:none}.panel,.stat{break-inside:avoid}body{background:white}.split-grid{grid-template-columns:1fr 1fr}.print-only{display:block}}
 
 @media(max-width:700px){.sidebar select{display:block;max-width:260px;margin-top:18px}}
+
+[hidden]{display:none!important}.step-detail .kv{min-width:0;overflow-wrap:anywhere}.sidebar select{margin-bottom:8px}.chart-bar.neutral{fill:#899b77}

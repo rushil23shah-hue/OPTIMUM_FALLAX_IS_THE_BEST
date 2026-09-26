@@ -3,5 +3,6 @@
   "ppo_icm": "ok",
   "td3": "ok",
   "td3_rnd": "ok",
-  "sac": "ok"
+  "sac": "ok",
+  "model_based": "ok"
 }

@@ -1,0 +1,802 @@
+[
+  {
+    "iteration": 1,
+    "steps": 1024,
+    "curriculum_difficulty": 0,
+    "mean_reward": 0.4697265625,
+    "loss": 78.69643783569336,
+    "elapsed_seconds": 6.578000000008615
+  },
+  {
+    "iteration": 2,
+    "steps": 2048,
+    "curriculum_difficulty": 0,
+    "mean_reward": 0.4404296875,
+    "loss": 84.92283344268799,
+    "elapsed_seconds": 13.062999999994645
+  },
+  {
+    "iteration": 3,
+    "steps": 3072,
+    "curriculum_difficulty": 0,
+    "mean_reward": 0.50390625,
+    "loss": 74.85406255722046,
+    "elapsed_seconds": 19.35899999999674
+  },
+  {
+    "iteration": 4,
+    "steps": 4096,
+    "curriculum_difficulty": 0,
+    "mean_reward": 0.5068359375,
+    "loss": 84.61852264404297,
+    "elapsed_seconds": 25.875
+  },
+  {
+    "iteration": 5,
+    "steps": 5120,
+    "curriculum_difficulty": 0,
+    "mean_reward": 0.5615234375,
+    "loss": 66.6475281715393,
+    "elapsed_seconds": 32.23399999999674
+  },
+  {
+    "iteration": 6,
+    "steps": 6144,
+    "curriculum_difficulty": 0,
+    "mean_reward": 0.5439453125,
+    "loss": 76.12828946113586,
+    "elapsed_seconds": 38.687999999994645
+  },
+  {
+    "iteration": 7,
+    "steps": 7168,
+    "curriculum_difficulty": 0,
+    "mean_reward": 0.5966796875,
+    "loss": 67.8622739315033,
+    "elapsed_seconds": 45.187999999994645
+  },
+  {
+    "iteration": 8,
+    "steps": 8192,
+    "curriculum_difficulty": 0,
+    "mean_reward": 0.560546875,
+    "loss": 55.10545110702515,
+    "elapsed_seconds": 51.625
+  },
+  {
+    "iteration": 9,
+    "steps": 9216,
+    "curriculum_difficulty": 0,
+    "mean_reward": 0.6435546875,
+    "loss": 50.34906363487244,
+    "elapsed_seconds": 58.280999999988126
+  },
+  {
+    "iteration": 10,
+    "steps": 10240,
+    "curriculum_difficulty": 0,
+    "mean_reward": 0.7060546875,
+    "loss": 48.11555004119873,
+    "elapsed_seconds": 65.01600000000326
+  },
+  {
+    "iteration": 11,
+    "steps": 11264,
+    "curriculum_difficulty": 0,
+    "mean_reward": 0.7900390625,
+    "loss": 42.49947738647461,
+    "elapsed_seconds": 72.64100000000326
+  },
+  {
+    "iteration": 12,
+    "steps": 12288,
+    "curriculum_difficulty": 0,
+    "mean_reward": 0.8076171875,
+    "loss": 30.545910835266113,
+    "elapsed_seconds": 80.26600000000326
+  },
+  {
+    "iteration": 13,
+    "steps": 13312,
+    "curriculum_difficulty": 0,
+    "mean_reward": 0.765625,
+    "loss": 26.569567918777466,
+    "elapsed_seconds": 88.07800000000861
+  },
+  {
+    "iteration": 14,
+    "steps": 14336,
+    "curriculum_difficulty": 0,
+    "mean_reward": 0.8603515625,
+    "loss": 29.248211145401,
+    "elapsed_seconds": 95.85899999999674
+  },
+  {
+    "iteration": 15,
+    "steps": 15360,
+    "curriculum_difficulty": 0,
+    "mean_reward": 0.8310546875,
+    "loss": 26.525440454483032,
+    "elapsed_seconds": 102.76600000000326
+  },
+  {
+    "iteration": 16,
+    "steps": 16384,
+    "curriculum_difficulty": 0,
+    "mean_reward": 0.82421875,
+    "loss": 24.701072454452515,
+    "elapsed_seconds": 110.01600000000326
+  },
+  {
+    "iteration": 17,
+    "steps": 17408,
+    "curriculum_difficulty": 0,
+    "mean_reward": 0.83984375,
+    "loss": 23.547722935676575,
+    "elapsed_seconds": 117.20300000000861
+  },
+  {
+    "iteration": 18,
+    "steps": 18432,
+    "curriculum_difficulty": 0,
+    "mean_reward": 0.89453125,
+    "loss": 24.94867444038391,
+    "elapsed_seconds": 124.28099999998813
+  },
+  {
+    "iteration": 19,
+    "steps": 19456,
+    "curriculum_difficulty": 0,
+    "mean_reward": 0.9755859375,
+    "loss": 20.990001916885376,
+    "elapsed_seconds": 130.875
+  },
+  {
+    "iteration": 20,
+    "steps": 20480,
+    "curriculum_difficulty": 1,
+    "mean_reward": 0.578125,
+    "loss": 28.53140389919281,
+    "elapsed_seconds": 137.53099999998813
+  },
+  {
+    "iteration": 21,
+    "steps": 21504,
+    "curriculum_difficulty": 1,
+    "mean_reward": 0.4365234375,
+    "loss": 25.25826632976532,
+    "elapsed_seconds": 144.15599999998813
+  },
+  {
+    "iteration": 22,
+    "steps": 22528,
+    "curriculum_difficulty": 1,
+    "mean_reward": 0.458984375,
+    "loss": 28.099669218063354,
+    "elapsed_seconds": 150.875
+  },
+  {
+    "iteration": 23,
+    "steps": 23552,
+    "curriculum_difficulty": 1,
+    "mean_reward": 0.5419921875,
+    "loss": 28.608951330184937,
+    "elapsed_seconds": 157.54699999999139
+  },
+  {
+    "iteration": 24,
+    "steps": 24576,
+    "curriculum_difficulty": 1,
+    "mean_reward": 0.6015625,
+    "loss": 26.046425461769104,
+    "elapsed_seconds": 164.31299999999464
+  },
+  {
+    "iteration": 25,
+    "steps": 25600,
+    "curriculum_difficulty": 1,
+    "mean_reward": 0.5,
+    "loss": 32.09350848197937,
+    "elapsed_seconds": 171.125
+  },
+  {
+    "iteration": 26,
+    "steps": 26624,
+    "curriculum_difficulty": 1,
+    "mean_reward": 0.46875,
+    "loss": 26.80902910232544,
+    "elapsed_seconds": 178.03099999998813
+  },
+  {
+    "iteration": 27,
+    "steps": 27648,
+    "curriculum_difficulty": 1,
+    "mean_reward": 0.578125,
+    "loss": 29.050891160964966,
+    "elapsed_seconds": 184.76600000000326
+  },
+  {
+    "iteration": 28,
+    "steps": 28672,
+    "curriculum_difficulty": 1,
+    "mean_reward": 0.62109375,
+    "loss": 27.881784439086914,
+    "elapsed_seconds": 191.375
+  },
+  {
+    "iteration": 29,
+    "steps": 29696,
+    "curriculum_difficulty": 1,
+    "mean_reward": 0.5859375,
+    "loss": 27.965439200401306,
+    "elapsed_seconds": 198.14100000000326
+  },
+  {
+    "iteration": 30,
+    "steps": 30720,
+    "curriculum_difficulty": 1,
+    "mean_reward": 0.6142578125,
+    "loss": 28.178289771080017,
+    "elapsed_seconds": 204.82800000000861
+  },
+  {
+    "iteration": 31,
+    "steps": 31744,
+    "curriculum_difficulty": 1,
+    "mean_reward": 0.65234375,
+    "loss": 27.57037341594696,
+    "elapsed_seconds": 211.46899999998277
+  },
+  {
+    "iteration": 32,
+    "steps": 32768,
+    "curriculum_difficulty": 1,
+    "mean_reward": 0.6328125,
+    "loss": 26.179999351501465,
+    "elapsed_seconds": 218.32800000000861
+  },
+  {
+    "iteration": 33,
+    "steps": 33792,
+    "curriculum_difficulty": 1,
+    "mean_reward": 0.548828125,
+    "loss": 22.989988207817078,
+    "elapsed_seconds": 225.92199999999139
+  },
+  {
+    "iteration": 34,
+    "steps": 34816,
+    "curriculum_difficulty": 1,
+    "mean_reward": 0.75,
+    "loss": 26.93792712688446,
+    "elapsed_seconds": 233.31299999999464
+  },
+  {
+    "iteration": 35,
+    "steps": 35840,
+    "curriculum_difficulty": 1,
+    "mean_reward": 0.5927734375,
+    "loss": 27.44573664665222,
+    "elapsed_seconds": 240.625
+  },
+  {
+    "iteration": 36,
+    "steps": 36864,
+    "curriculum_difficulty": 1,
+    "mean_reward": 0.4990234375,
+    "loss": 26.147915482521057,
+    "elapsed_seconds": 247.79699999999139
+  },
+  {
+    "iteration": 37,
+    "steps": 37888,
+    "curriculum_difficulty": 1,
+    "mean_reward": 0.4677734375,
+    "loss": 24.183838605880737,
+    "elapsed_seconds": 254.67199999999139
+  },
+  {
+    "iteration": 38,
+    "steps": 38912,
+    "curriculum_difficulty": 1,
+    "mean_reward": 0.5615234375,
+    "loss": 24.143428802490234,
+    "elapsed_seconds": 261.31299999999464
+  },
+  {
+    "iteration": 39,
+    "steps": 39936,
+    "curriculum_difficulty": 1,
+    "mean_reward": 0.5732421875,
+    "loss": 25.67857336997986,
+    "elapsed_seconds": 268.21899999998277
+  },
+  {
+    "iteration": 40,
+    "steps": 40960,
+    "curriculum_difficulty": 1,
+    "mean_reward": 0.5048828125,
+    "loss": 25.928778290748596,
+    "elapsed_seconds": 274.8280000000086
+  },
+  {
+    "iteration": 41,
+    "steps": 41984,
+    "curriculum_difficulty": 1,
+    "mean_reward": 0.732421875,
+    "loss": 25.94442057609558,
+    "elapsed_seconds": 281.43799999999464
+  },
+  {
+    "iteration": 42,
+    "steps": 43008,
+    "curriculum_difficulty": 1,
+    "mean_reward": 0.5498046875,
+    "loss": 26.271842122077942,
+    "elapsed_seconds": 288.2030000000086
+  },
+  {
+    "iteration": 43,
+    "steps": 44032,
+    "curriculum_difficulty": 1,
+    "mean_reward": 0.5029296875,
+    "loss": 21.94418215751648,
+    "elapsed_seconds": 294.9530000000086
+  },
+  {
+    "iteration": 44,
+    "steps": 45056,
+    "curriculum_difficulty": 1,
+    "mean_reward": 0.6318359375,
+    "loss": 22.074561953544617,
+    "elapsed_seconds": 301.71899999998277
+  },
+  {
+    "iteration": 45,
+    "steps": 46080,
+    "curriculum_difficulty": 1,
+    "mean_reward": 0.5341796875,
+    "loss": 24.753037095069885,
+    "elapsed_seconds": 308.4059999999881
+  },
+  {
+    "iteration": 46,
+    "steps": 47104,
+    "curriculum_difficulty": 1,
+    "mean_reward": 0.474609375,
+    "loss": 21.315962076187134,
+    "elapsed_seconds": 315.10899999999674
+  },
+  {
+    "iteration": 47,
+    "steps": 48128,
+    "curriculum_difficulty": 1,
+    "mean_reward": 0.5224609375,
+    "loss": 21.29788839817047,
+    "elapsed_seconds": 321.84399999998277
+  },
+  {
+    "iteration": 48,
+    "steps": 49152,
+    "curriculum_difficulty": 1,
+    "mean_reward": 0.5595703125,
+    "loss": 25.334666848182678,
+    "elapsed_seconds": 328.4219999999914
+  },
+  {
+    "iteration": 49,
+    "steps": 50176,
+    "curriculum_difficulty": 1,
+    "mean_reward": 0.52734375,
+    "loss": 22.33161187171936,
+    "elapsed_seconds": 334.9530000000086
+  },
+  {
+    "iteration": 50,
+    "steps": 51200,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.35546875,
+    "loss": 30.356759190559387,
+    "elapsed_seconds": 341.9219999999914
+  },
+  {
+    "iteration": 51,
+    "steps": 52224,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.4306640625,
+    "loss": 33.37593078613281,
+    "elapsed_seconds": 349.0469999999914
+  },
+  {
+    "iteration": 52,
+    "steps": 53248,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.484375,
+    "loss": 24.648524522781372,
+    "elapsed_seconds": 356.1559999999881
+  },
+  {
+    "iteration": 53,
+    "steps": 54272,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.28515625,
+    "loss": 30.906129956245422,
+    "elapsed_seconds": 363.2969999999914
+  },
+  {
+    "iteration": 54,
+    "steps": 55296,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.2314453125,
+    "loss": 29.56217110157013,
+    "elapsed_seconds": 370.01600000000326
+  },
+  {
+    "iteration": 55,
+    "steps": 56320,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.3271484375,
+    "loss": 25.407357454299927,
+    "elapsed_seconds": 376.7030000000086
+  },
+  {
+    "iteration": 56,
+    "steps": 57344,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.1806640625,
+    "loss": 25.017383933067322,
+    "elapsed_seconds": 383.4059999999881
+  },
+  {
+    "iteration": 57,
+    "steps": 58368,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.24609375,
+    "loss": 25.850817441940308,
+    "elapsed_seconds": 390.01600000000326
+  },
+  {
+    "iteration": 58,
+    "steps": 59392,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.3955078125,
+    "loss": 24.820658206939697,
+    "elapsed_seconds": 396.73399999999674
+  },
+  {
+    "iteration": 59,
+    "steps": 60416,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.30859375,
+    "loss": 28.69415271282196,
+    "elapsed_seconds": 403.46899999998277
+  },
+  {
+    "iteration": 60,
+    "steps": 61440,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.453125,
+    "loss": 24.17673373222351,
+    "elapsed_seconds": 410.26600000000326
+  },
+  {
+    "iteration": 61,
+    "steps": 62464,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.3486328125,
+    "loss": 23.911884546279907,
+    "elapsed_seconds": 416.875
+  },
+  {
+    "iteration": 62,
+    "steps": 63488,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.33984375,
+    "loss": 21.714608192443848,
+    "elapsed_seconds": 423.48399999999674
+  },
+  {
+    "iteration": 63,
+    "steps": 64512,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.2138671875,
+    "loss": 25.014291405677795,
+    "elapsed_seconds": 430.18799999999464
+  },
+  {
+    "iteration": 64,
+    "steps": 65536,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.125,
+    "loss": 34.30208921432495,
+    "elapsed_seconds": 436.7809999999881
+  },
+  {
+    "iteration": 65,
+    "steps": 66560,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.1357421875,
+    "loss": 28.68309760093689,
+    "elapsed_seconds": 443.85899999999674
+  },
+  {
+    "iteration": 66,
+    "steps": 67584,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.4228515625,
+    "loss": 26.947795391082764,
+    "elapsed_seconds": 450.5
+  },
+  {
+    "iteration": 67,
+    "steps": 68608,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.1787109375,
+    "loss": 27.13336420059204,
+    "elapsed_seconds": 457.7809999999881
+  },
+  {
+    "iteration": 68,
+    "steps": 69632,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.2783203125,
+    "loss": 23.496556758880615,
+    "elapsed_seconds": 464.9059999999881
+  },
+  {
+    "iteration": 69,
+    "steps": 70656,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.376953125,
+    "loss": 22.019131898880005,
+    "elapsed_seconds": 472.0469999999914
+  },
+  {
+    "iteration": 70,
+    "steps": 71680,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.1787109375,
+    "loss": 26.698175311088562,
+    "elapsed_seconds": 479.51600000000326
+  },
+  {
+    "iteration": 71,
+    "steps": 72704,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.1962890625,
+    "loss": 31.262734413146973,
+    "elapsed_seconds": 486.85899999999674
+  },
+  {
+    "iteration": 72,
+    "steps": 73728,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.265625,
+    "loss": 20.782507061958313,
+    "elapsed_seconds": 494.06299999999464
+  },
+  {
+    "iteration": 73,
+    "steps": 74752,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.388671875,
+    "loss": 19.24889838695526,
+    "elapsed_seconds": 501.01600000000326
+  },
+  {
+    "iteration": 74,
+    "steps": 75776,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.291015625,
+    "loss": 21.59716761112213,
+    "elapsed_seconds": 507.875
+  },
+  {
+    "iteration": 75,
+    "steps": 76800,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.173828125,
+    "loss": 20.48726201057434,
+    "elapsed_seconds": 514.7030000000086
+  },
+  {
+    "iteration": 76,
+    "steps": 77824,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.197265625,
+    "loss": 24.778779983520508,
+    "elapsed_seconds": 521.7660000000033
+  },
+  {
+    "iteration": 77,
+    "steps": 78848,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.271484375,
+    "loss": 21.762952208518982,
+    "elapsed_seconds": 528.6879999999946
+  },
+  {
+    "iteration": 78,
+    "steps": 79872,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.3564453125,
+    "loss": 29.17578911781311,
+    "elapsed_seconds": 535.7189999999828
+  },
+  {
+    "iteration": 79,
+    "steps": 80896,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.27734375,
+    "loss": 23.10698926448822,
+    "elapsed_seconds": 543.3280000000086
+  },
+  {
+    "iteration": 80,
+    "steps": 81920,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.2744140625,
+    "loss": 16.451212644577026,
+    "elapsed_seconds": 551.25
+  },
+  {
+    "iteration": 81,
+    "steps": 82944,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.322265625,
+    "loss": 37.59895920753479,
+    "elapsed_seconds": 559.3280000000086
+  },
+  {
+    "iteration": 82,
+    "steps": 83968,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.0322265625,
+    "loss": 29.43554186820984,
+    "elapsed_seconds": 567.3439999999828
+  },
+  {
+    "iteration": 83,
+    "steps": 84992,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.2158203125,
+    "loss": 21.040005087852478,
+    "elapsed_seconds": 575.3439999999828
+  },
+  {
+    "iteration": 84,
+    "steps": 86016,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.3056640625,
+    "loss": 22.618926167488098,
+    "elapsed_seconds": 582.625
+  },
+  {
+    "iteration": 85,
+    "steps": 87040,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.2490234375,
+    "loss": 24.076648712158203,
+    "elapsed_seconds": 589.9530000000086
+  },
+  {
+    "iteration": 86,
+    "steps": 88064,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.4013671875,
+    "loss": 23.182827830314636,
+    "elapsed_seconds": 597.3280000000086
+  },
+  {
+    "iteration": 87,
+    "steps": 89088,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.365234375,
+    "loss": 18.570562481880188,
+    "elapsed_seconds": 604.4839999999967
+  },
+  {
+    "iteration": 88,
+    "steps": 90112,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.2978515625,
+    "loss": 21.507261514663696,
+    "elapsed_seconds": 611.4059999999881
+  },
+  {
+    "iteration": 89,
+    "steps": 91136,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.22265625,
+    "loss": 21.90164077281952,
+    "elapsed_seconds": 618.2339999999967
+  },
+  {
+    "iteration": 90,
+    "steps": 92160,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.19140625,
+    "loss": 22.74128520488739,
+    "elapsed_seconds": 625.1089999999967
+  },
+  {
+    "iteration": 91,
+    "steps": 93184,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.419921875,
+    "loss": 20.728140234947205,
+    "elapsed_seconds": 631.9689999999828
+  },
+  {
+    "iteration": 92,
+    "steps": 94208,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.2421875,
+    "loss": 19.994496941566467,
+    "elapsed_seconds": 638.8280000000086
+  },
+  {
+    "iteration": 93,
+    "steps": 95232,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.197265625,
+    "loss": 24.343196392059326,
+    "elapsed_seconds": 645.6719999999914
+  },
+  {
+    "iteration": 94,
+    "steps": 96256,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.3466796875,
+    "loss": 22.74501597881317,
+    "elapsed_seconds": 652.4839999999967
+  },
+  {
+    "iteration": 95,
+    "steps": 97280,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.275390625,
+    "loss": 18.679773926734924,
+    "elapsed_seconds": 659.4530000000086
+  },
+  {
+    "iteration": 96,
+    "steps": 98304,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.1435546875,
+    "loss": 29.3518625497818,
+    "elapsed_seconds": 666.2339999999967
+  },
+  {
+    "iteration": 97,
+    "steps": 99328,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.296875,
+    "loss": 21.88637375831604,
+    "elapsed_seconds": 672.9839999999967
+  },
+  {
+    "iteration": 98,
+    "steps": 100352,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.2412109375,
+    "loss": 21.957015991210938,
+    "elapsed_seconds": 679.6879999999946
+  },
+  {
+    "iteration": 99,
+    "steps": 101376,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.234375,
+    "loss": 21.416377663612366,
+    "elapsed_seconds": 686.3439999999828
+  },
+  {
+    "iteration": 100,
+    "steps": 102400,
+    "curriculum_difficulty": 2,
+    "mean_reward": 0.2041015625,
+    "loss": 21.53165900707245,
+    "elapsed_seconds": 692.9689999999828
+  }
+]
