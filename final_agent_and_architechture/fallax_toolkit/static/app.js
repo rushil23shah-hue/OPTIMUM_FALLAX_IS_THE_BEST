@@ -415,6 +415,14 @@ function initChat() {
   document.querySelectorAll('[data-chat-prompt]').forEach(button=>button.addEventListener('click',()=>{input.value=button.dataset.chatPrompt;form.requestSubmit();}));
 }
 initChat();
+// CSS animations may be disabled or partially supported by embedded browsers.
+// Always release the full-page intro so it can never block the dashboard.
+const introLoader=$('#intro-loader');
+if(introLoader){
+  const releaseIntro=()=>{introLoader.style.visibility='hidden';introLoader.style.opacity='0';introLoader.style.pointerEvents='none';introLoader.remove();};
+  introLoader.addEventListener('animationend',event=>{if(event.animationName==='loader-exit')releaseIntro();});
+  setTimeout(releaseIntro,5500);
+}
 window.addEventListener('hashchange',render);
 refresh(true);setInterval(()=>refresh(),4000);
 
